@@ -7,13 +7,13 @@ import {Component} from '@angular/core';
 // CommonModule for @For and stuff
 // FormsModoule for NgModel
 @Component({
-  selector: 'app-tour-component',
+  selector: 'app-tour-dashboard',
   imports: [CommonModule,FormsModule],
-  templateUrl: './tour-component.html',
-  styleUrl: './tour-component.scss',
+  templateUrl: './tour-dashboard.html',
+  styleUrl: './tour-dashboard.scss',
 })
 
-export class TourComponent 
+export class TourDashboard
 {
   tours: TourDtoAngular[] = [];
   newTour: TourDtoAngular = { id: 0, name: '', description: '', from: '', to: '', transportType: ''};
