@@ -1,5 +1,5 @@
-import { TourService } from '../services/tourService';
-import { TourDtoAngular } from '../models/tourModel';
+import { TourService } from '../../services/tourService';
+import { TourDtoAngular } from '../../models/tourModel';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Component} from '@angular/core';
@@ -16,7 +16,7 @@ import {Component} from '@angular/core';
 export class TourComponent 
 {
   tours: TourDtoAngular[] = [];
-  newTour: TourDtoAngular = { id: 0, name: 't', description: '', from: '', to: '', transportType: ''};
+  newTour: TourDtoAngular = { id: 0, name: '', description: '', from: '', to: '', transportType: ''};
 
   constructor(private tourService: TourService) {}
 

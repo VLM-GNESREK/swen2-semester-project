@@ -7,6 +7,12 @@
   <input placeholder="From" [(ngModel)]="newTour.from" required>
   <input placeholder="To" [(ngModel)]="newTour.to" required>
   <input placeholder="Description" [(ngModel)]="newTour.description">
+  <select [(ngModel)]="newTour.transportType" required>
+    <option value="" disabled selected>Select transport type</option>
+    <option value="Car">Car</option>
+    <option value="Bicycle">Bicycle</option>
+    <option value="Walking">Walking</option>
+  </select>
   <button (click)="addTour()">Add Tour</button>
 
 </div>
