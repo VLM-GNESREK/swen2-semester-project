@@ -14,4 +14,8 @@
     <ProjectReference Include="..\TourPlanner.BL\TourPlanner.BL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+  </ItemGroup>
+
 </Project>

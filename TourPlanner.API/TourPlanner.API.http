@@ -1,6 +1,13 @@
-@TourPlanner.API_HostAddress = http://localhost:5239
+@ip = http://localhost:5239
 
-GET {{TourPlanner.API_HostAddress}}/weatherforecast/
+GET {{ip}}/weatherforecast/
 Accept: application/json
 
-###
+### get all tours
+GET {{ip}}/api/tours
+
+### post new tour
+POST {{ip}}/api/tours
+Content-Type: application/json
+
+{"name":"tfdsafsda","description":"fda","from":"fdsa","to":"fdsa"}
