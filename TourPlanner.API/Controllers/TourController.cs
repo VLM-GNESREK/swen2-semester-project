@@ -31,18 +31,26 @@ public class TourController : ControllerBase
     public IActionResult Create(TourDto tour)
     {
         var addTour = _tourService.AddTour(tour);
-        return Ok(addTour);
+        return Ok();
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(TourDto tour)
+    public IActionResult Update(int id,TourDto tour)
     {
-        return Ok();
+        if (_tourService.UpdateTour(id, tour))
+        {
+            return Ok();
+        }
+        return NotFound();
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        return Ok();
+        if (_tourService.DeleteToru(id))
+        {
+            return Ok();
+        }
+        return NotFound();
     }
 }

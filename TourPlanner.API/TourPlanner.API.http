@@ -1,8 +1,5 @@
 @ip = http://localhost:5239
 
-GET {{ip}}/weatherforecast/
-Accept: application/json
-
 ### get all tours
 GET {{ip}}/api/tours
 
@@ -10,4 +7,51 @@ GET {{ip}}/api/tours
 POST {{ip}}/api/tours
 Content-Type: application/json
 
-{"name":"tfdsafsda","description":"fda","from":"fdsa","to":"fdsa"}
+{"name":"tfdsafsda","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
+"distance": 4000.3, "estimatedTime": 40.2}
+
+### Update Tour
+PUT {{ip}}/api/tours/1
+Content-Type: application/json
+
+{"name":"bibibibi","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
+  "distance": 4000.3, "estimatedTime": 40.2}
+
+### Delete Tour
+DELETE {{ip}}/api/tours/1
+
+########### GET TOUR LOGS
+GET {{ip}}/api/tours/0/logs
+
+############ ADD TOUR LOG
+POST {{ip}}/api/tours/0/logs
+Content-Type: application/json
+
+{
+  "tourId": 0,
+  "date": "2026-04-03T14:30:00",
+  "userName": "Sercan",
+  "difficulty": "Medium",
+  "totalDistance": 12.5,
+  "totalTime": 2.75,
+  "rating": 4
+}
+
+############ UPDATE TOUR LOG
+PUT {{ip}}/api/tours/0/logs/0
+Content-Type: application/json
+
+{
+  "tourId": 0,
+  "date": "2026-04-03T14:30:00",
+  "userName": "Vincent",
+  "difficulty": "Giga Hard",
+  "totalDistance": 12432432.5,
+  "totalTime": 233.75,
+  "rating": 4
+}
+
+############ DELETE TOUR LOG
+DELETE {{ip}}/api/tours/0/logs/0
+
+

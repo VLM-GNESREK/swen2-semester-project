@@ -27,8 +27,14 @@ public class TourService : ITourService
         
     }
 
-    public bool UpdateTour(TourDto tour)
+    public bool UpdateTour(int id, TourDto tour)
     {
-        return true;
+        if (_tours.ContainsKey(id))
+        {
+            tour.Id = id;
+            _tours[id] = tour;
+            return true;
+        }
+        return false;
     }
 }
