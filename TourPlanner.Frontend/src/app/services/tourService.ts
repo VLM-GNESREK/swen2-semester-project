@@ -7,28 +7,31 @@ import {Observable} from 'rxjs';
   providedIn: 'root',
 })
 
-export class TourService 
+export class TourService
 {
   private apiUrl = 'http://localhost:5239/api/tours';
 
   constructor(private http: HttpClient) {}
 
-  getTours(): Observable<TourDtoAngular[]> 
+  getTours(): Observable<TourDtoAngular[]>
   {
     return this.http.get<TourDtoAngular[]>(this.apiUrl);
   }
 
-  getTourById(id: number): Observable<TourDtoAngular> 
+  getTourById(id: number): Observable<TourDtoAngular>
   {
-    return this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`);
+    console.log("IM HERE");
+    var test = this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`);
+    console.log(this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`));
+    return test
   }
 
-  createTour(tour: TourDtoAngular) 
+  createTour(tour: TourDtoAngular)
   {
     return this.http.post(this.apiUrl, tour);
   }
 
-  deleteTour(id: number) 
+  deleteTour(id: number)
   {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

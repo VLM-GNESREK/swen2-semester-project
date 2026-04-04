@@ -37,23 +37,23 @@
 
         <div class="col-md-8">
             <h3>Tour Logs</h3>
-            @if (logs.length === 0) 
+            @if (logs.length === 0)
             {
                 <div class="alert alert-info">No logs found for this tour.</div>
-            } 
-            @else 
+            }
+            @else
             {
                 <div class="list-group">
-                    @for (log of logs; track log.id) 
+                    @for (log of logs; track log.id)
                     {
                         <div class="list-group-item">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ log.username }} - {{ log.date }}</h5>
+                                <h5 class="mb-1">{{ log.username }} - {{ log.date  | date:'fullDate' }}</h5>
                                 <small>Rating: {{ log.rating }}/5</small>
                             </div>
                             <p class="mb-1">
-                                <strong>Difficulty:</strong> {{ log.difficulty }} | 
-                                <strong>Distance:</strong> {{ log.totalDistance }} km | 
+                                <strong>Difficulty:</strong> {{ log.difficulty }} |
+                                <strong>Distance:</strong> {{ log.totalDistance }} km |
                                 <strong>Time:</strong> {{ log.totalTime }}
                             </p>
                             <button class="btn btn-sm btn-danger mt-2" (click)="deleteLog(log.id)">Delete</button>

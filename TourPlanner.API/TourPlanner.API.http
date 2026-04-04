@@ -30,8 +30,8 @@ Content-Type: application/json
 {
   "tourId": 0,
   "date": "2026-04-03T14:30:00",
-  "userName": "Sercan",
-  "difficulty": "Medium",
+  "username": "Sercan",
+  "difficulty": 5,
   "totalDistance": 12.5,
   "totalTime": 2.75,
   "rating": 4

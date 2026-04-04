@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -13,12 +13,12 @@ import { TourLog } from '../../models/tourlogModel';
   styleUrl: './tour-logs.scss'
 })
 
-export class TourLogsComponent implements OnInit 
+export class TourLogsComponent implements OnInit
 {
   tourId: number = 0;
   logs: TourLog[] = [];
-  
-  newLog: TourLog = 
+
+  newLog: TourLog =
   {
     id: 0,
     tourID: 0,
@@ -30,15 +30,15 @@ export class TourLogsComponent implements OnInit
     rating: 0
   };
 
-  constructor(private route: ActivatedRoute, private tourLogService: TourLogService) {}
+  constructor(private route: ActivatedRoute, private tourLogService: TourLogService,private changeDetectorRef: ChangeDetectorRef) {}
 
-  ngOnInit(): void 
+  ngOnInit(): void
   {
-    this.route.paramMap.subscribe(params => 
+    this.route.paramMap.subscribe(params =>
     {
       const idParam = params.get('id');
 
-      if (idParam === null) 
+      if (idParam === null)
       {
         console.error('No tour ID provided.');
         return;
@@ -50,26 +50,28 @@ export class TourLogsComponent implements OnInit
     });
   }
 
-  loadLogs(): void 
+  loadLogs(): void
   {
-    this.tourLogService.getTourLogsByTourId(this.tourId).subscribe(data => 
+    this.tourLogService.getTourLogsByTourId(this.tourId).subscribe(data =>
     {
-      this.logs = data || []; 
+      this.logs = data || [];
+      this.changeDetectorRef.detectChanges();
     });
   }
 
-  addLog(): void 
+  addLog(): void
   {
-    this.tourLogService.createTourLog(this.tourId, this.newLog).subscribe(() => 
+    this.tourLogService.createTourLog(this.tourId, this.newLog).subscribe(() =>
     {
       this.loadLogs();
       this.newLog = { ...this.newLog, id: 0, username: '', difficulty: 0, totalDistance: 0, totalTime: 0, rating: 0 };
+
     });
   }
 
-  deleteLog(logId: number): void 
+  deleteLog(logId: number): void
   {
-    this.tourLogService.deleteTourLog(this.tourId, logId).subscribe(() => 
+    this.tourLogService.deleteTourLog(this.tourId, logId).subscribe(() =>
     {
       this.loadLogs();
     });
