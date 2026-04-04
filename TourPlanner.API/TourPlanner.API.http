@@ -7,18 +7,18 @@ GET {{ip}}/api/tours
 POST {{ip}}/api/tours
 Content-Type: application/json
 
-{"name":"tfdsafsda","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
+{"name":"serdfdac","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
 "distance": 4000.3, "estimatedTime": 40.2}
 
 ### Update Tour
-PUT {{ip}}/api/tours/1
+PUT {{ip}}/api/tours/42
 Content-Type: application/json
 
 {"name":"bibibibi","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
   "distance": 4000.3, "estimatedTime": 40.2}
 
 ### Delete Tour
-DELETE {{ip}}/api/tours/1
+DELETE {{ip}}/api/tours/0
 
 ########### GET TOUR LOGS
 GET {{ip}}/api/tours/0/logs

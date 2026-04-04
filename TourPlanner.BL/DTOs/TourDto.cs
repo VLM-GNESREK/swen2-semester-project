@@ -10,4 +10,5 @@ public class TourDto
     public string TransportType { get; set; } = string.Empty;
     public double Distance { get; set; }
     public double EstimatedTime { get; set; }
+    public string RouteInformation { get; set; }= string.Empty;
 }

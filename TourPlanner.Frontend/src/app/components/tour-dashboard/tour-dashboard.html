@@ -22,17 +22,32 @@
 <!-- Tour List -->
 <div>
   <h3>Tour List</h3>
-  @for (tour of tours; track tour.id) {
+  @for (tour of toursUIonly; track tour.id) {
     <div style="border:1px solid black; margin:5px; padding:5px;">
 
-      <strong>{{ tour.name }}{{tour.id}}</strong><br>
-      {{ tour.from }} → {{ tour.to }}<br>
-      {{ tour.description }}<br>
+      <!-- Edit mode -->
+      <div *ngIf="editingTourId === tour.id">
+        <input [(ngModel)]="editedTour.name" placeholder="Name">
+        <input [(ngModel)]="editedTour.from" placeholder="From">
+        <input [(ngModel)]="editedTour.to" placeholder="To">
+        <input [(ngModel)]="editedTour.description" placeholder="Description">
+        <input [(ngModel)]="editedTour.transportType" placeholder="Transport Type">
+        <input [(ngModel)]="editedTour.distance" placeholder="Distance">
+        <input [(ngModel)]="editedTour.estimatedTime" placeholder="Estimated Time">
+        <input [(ngModel)]="editedTour.routeInformation" placeholder="Route Info">
+        <button (click)="saveTour(tour.id)">Save</button>
+        <button (click)="cancelEdit()">Cancel</button>
+      </div>
 
-      <button (click)="deleteTour(tour.id)">Delete</button>
+      <!-- Display mode -->
+      <div *ngIf="editingTourId !== tour.id">
+        <strong>{{ tour.name }}</strong><br>
+        {{ tour.from }} → {{ tour.to }}<br>
+        {{ tour.description }}<br>
+        <button (click)="editTour(tour)">Edit</button>
+        <button (click)="deleteTour(tour.id)">Delete</button>
+      </div>
+
     </div>
-
   }
-
-
 </div>
