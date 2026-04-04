@@ -23,4 +23,7 @@ export class TourService {
   deleteTour(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+  updateTour(id: number, tour: TourDtoAngular) {
+    return this.http.put(`${this.apiUrl}/${id}`,tour);
+  }
 }
