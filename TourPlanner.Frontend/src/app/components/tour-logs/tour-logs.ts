@@ -1,9 +1,77 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import { TourLogService } from '../../services/tourlogService';
+import { TourLog } from '../../models/tourlogModel';
 
-@Component({
+@Component
+({
   selector: 'app-tour-logs',
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './tour-logs.html',
-  styleUrl: './tour-logs.scss',
+  styleUrl: './tour-logs.scss'
 })
-export class TourLogs {}
+
+export class TourLogsComponent implements OnInit 
+{
+  tourId: number = 0;
+  logs: TourLog[] = [];
+  
+  newLog: TourLog = 
+  {
+    id: 0,
+    tourID: 0,
+    date: new Date().toISOString().split('T')[0],
+    username: '',
+    difficulty: 0,
+    totalDistance: 0,
+    totalTime: 0,
+    rating: 0
+  };
+
+  constructor(private route: ActivatedRoute, private tourLogService: TourLogService) {}
+
+  ngOnInit(): void 
+  {
+    this.route.paramMap.subscribe(params => 
+    {
+      const idParam = params.get('id');
+
+      if (idParam === null) 
+      {
+        console.error('No tour ID provided.');
+        return;
+      }
+
+      this.tourId = +idParam;
+      this.newLog.tourID = this.tourId;
+      this.loadLogs();
+    });
+  }
+
+  loadLogs(): void 
+  {
+    this.tourLogService.getTourLogsByTourId(this.tourId).subscribe(data => 
+    {
+      this.logs = data || []; 
+    });
+  }
+
+  addLog(): void 
+  {
+    this.tourLogService.createTourLog(this.tourId, this.newLog).subscribe(() => 
+    {
+      this.loadLogs();
+      this.newLog = { ...this.newLog, id: 0, username: '', difficulty: 0, totalDistance: 0, totalTime: 0, rating: 0 };
+    });
+  }
+
+  deleteLog(logId: number): void 
+  {
+    this.tourLogService.deleteTourLog(this.tourId, logId).subscribe(() => 
+    {
+      this.loadLogs();
+    });
+  }
+}
