@@ -1,5 +1,5 @@
-import {TourService} from '../services/tourService';
-import {TourDtoAngular} from '../models/tourModel';
+import {TourService} from '../../services/tourService';
+import {TourDtoAngular} from '../../models/tourModel';
 import {AsyncPipe, CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Observable, interval, switchMap} from 'rxjs';
@@ -14,7 +14,7 @@ import {Component, ChangeDetectorRef} from '@angular/core';
   styleUrl: './tour-dashboard.scss',
 })
 
-export class TourComponent {
+export class TourDashboard {
   //so we can refresh data on the front end immediately while waiting for the "pull"
   toursUIonly: TourDtoAngular[] = [];
   newTour: TourDtoAngular = {id: 0, name: 't', description: '', from: '', to: '', transportType: ''};

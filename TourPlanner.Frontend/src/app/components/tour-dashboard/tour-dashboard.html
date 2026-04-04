@@ -31,7 +31,12 @@
         <input [(ngModel)]="editedTour.from" placeholder="From">
         <input [(ngModel)]="editedTour.to" placeholder="To">
         <input [(ngModel)]="editedTour.description" placeholder="Description">
-        <input [(ngModel)]="editedTour.transportType" placeholder="Transport Type">
+        <select [(ngModel)]="editedTour.transportType" required>
+          <option value="" disabled selected>Select transport type</option>
+          <option value="Car">Car</option>
+          <option value="Bicycle">Bicycle</option>
+          <option value="Walking">Walking</option>
+        </select>
         <input [(ngModel)]="editedTour.distance" placeholder="Distance">
         <input [(ngModel)]="editedTour.estimatedTime" placeholder="Estimated Time">
         <input [(ngModel)]="editedTour.routeInformation" placeholder="Route Info">

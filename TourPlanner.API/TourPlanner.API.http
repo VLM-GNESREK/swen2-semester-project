@@ -7,7 +7,7 @@ GET {{ip}}/api/tours
 POST {{ip}}/api/tours
 Content-Type: application/json
 
-{"name":"serdfdac","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
+{"name":"XD","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
 "distance": 4000.3, "estimatedTime": 40.2}
 
 ### Update Tour
