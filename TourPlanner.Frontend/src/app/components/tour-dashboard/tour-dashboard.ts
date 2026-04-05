@@ -1,19 +1,21 @@
-import {TourService} from '../../services/tourService';
-import {TourDtoAngular} from '../../models/tourModel';
+import { TourService } from '../../services/tourService';
+import { TourDtoAngular } from '../../models/tourModel';
+import {RouterLink} from '@angular/router';
 import {AsyncPipe, CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 import {Observable, interval, switchMap} from 'rxjs';
 import {Component, ChangeDetectorRef} from '@angular/core';
 
 @Component
 ({
   selector: 'app-tour-dashboard',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './tour-dashboard.html',
   styleUrl: './tour-dashboard.scss',
 })
 
-export class TourDashboard {
+export class TourDashboard 
+{
   //so we can refresh data on the front end immediately while waiting for the "pull"
   toursUIonly: TourDtoAngular[] = [];
   newTour: TourDtoAngular = {id: 0, name: '', description: '', from: '', to: '', transportType: ''};
@@ -33,24 +35,29 @@ export class TourDashboard {
   }
 
 
-  ngOnInit() {
-
+  ngOnInit() 
+  {
     this.getTours();
 
-    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => {
+    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => 
+    {
       this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  getTours() {
-    this.tourService.getTours().subscribe(toursData => {
+  getTours() 
+  {
+    this.tourService.getTours().subscribe(toursData => 
+    {
       this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  addTour() {
+  addTour(form: NgForm) 
+  {
+    if(form.invalid) return;
     const tempTour: TourDtoAngular =
       {
         id: -500,
@@ -65,25 +72,30 @@ export class TourDashboard {
       };
 
     this.toursUIonly = [...this.toursUIonly, tempTour];
-    this.newTour =
-      {
-        id: 0,
-        name: '',
-        description: '',
-        from: '',
-        to: '',
-        transportType: '',
-        distance: 0,
-        estimatedTime: 0,
-        routeInformation: ''
-      };
 
-    this.tourService.createTour(tempTour).subscribe(() => {
+    form.resetForm();
+
+    this.newTour =
+    {
+      id: 0,
+      name: '',
+      description: '',
+      from: '',
+      to: '',
+      transportType: '',
+      distance: 0,
+      estimatedTime: 0,
+      routeInformation: ''
+    };
+
+    this.tourService.createTour(tempTour).subscribe(() => 
+    {
       this.getTours();
     });
   }
 
-  deleteTour(id: number) {
+  deleteTour(id: number) 
+  {
     this.toursUIonly = this.toursUIonly.filter(t => t.id !== id); // filter out tour we want to delete
     this.tourService.deleteTour(id).subscribe();
   }
