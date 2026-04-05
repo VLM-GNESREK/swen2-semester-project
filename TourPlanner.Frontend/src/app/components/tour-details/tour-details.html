@@ -1,0 +1,39 @@
+<div class="container mt-5">
+    @if (tour) 
+    {
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Tour Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p><strong>ID:</strong> {{ tour.id }}</p>
+                                <p><strong>Name:</strong> {{ tour.name }}</p>
+                                <p><strong>Description:</strong> {{ tour.description }}</p>
+                                <p><strong>From:</strong> {{ tour.from }}</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p><strong>To:</strong> {{ tour.to }}</p>
+                                <p><strong>Transport Type:</strong> {{ tour.transportType }}</p>
+                                <p><strong>Distance:</strong> {{ tour.distance }} km</p>
+                                <p><strong>Estimated Time:</strong> {{ tour.estimatedTime }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Route Information:</strong></p>
+                            <img src="https://staticmapmaker.com/img/google-placeholder.png" alt="Route Map Placeholder" class="img-fluid rounded border">
+                        </div>
+                        <button class="btn btn-primary mt-4" [routerLink]="['/tours', tour.id, 'logs']">View Logs</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    } 
+    @else 
+    {
+        <p>Tour not found.</p>
+    }
+</div>

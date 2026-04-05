@@ -1,16 +1,15 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {CommonModule} from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import {TourComponent} from './tour-component/tour-component';
+import { Navbar } from './components/navbar/navbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TourComponent],
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 
-export class App {
-  protected readonly title = signal('TourPlanner.Frontend');
+export class App
+{
+  title = 'TourPlanner.Frontend';
 }

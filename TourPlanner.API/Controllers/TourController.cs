@@ -16,6 +16,16 @@ public class TourController : ControllerBase
     }
 
 
+    [HttpGet("{id}")]
+    public IActionResult GetbyId(int id)
+    {
+        var tours = _tourService.GetById(id);
+        if (tours == null)
+        {
+            return NoContent();
+        }
+        return Ok(tours);
+    }
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -53,4 +63,6 @@ public class TourController : ControllerBase
         }
         return NotFound();
     }
+    
+    
 }

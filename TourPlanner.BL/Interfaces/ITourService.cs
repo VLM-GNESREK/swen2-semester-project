@@ -10,4 +10,5 @@ public interface ITourService
     public bool AddTour(TourDto tour);
     public bool DeleteToru(int id);
     public bool UpdateTour(int id, TourDto tour);
+    public TourDto? GetById(int id);
 }

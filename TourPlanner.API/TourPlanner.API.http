@@ -7,7 +7,7 @@ GET {{ip}}/api/tours
 POST {{ip}}/api/tours
 Content-Type: application/json
 
-{"name":"serdfdac","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
+{"name":"XD","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
 "distance": 4000.3, "estimatedTime": 40.2}
 
 ### Update Tour
@@ -30,8 +30,8 @@ Content-Type: application/json
 {
   "tourId": 0,
   "date": "2026-04-03T14:30:00",
-  "userName": "Sercan",
-  "difficulty": "Medium",
+  "username": "Sercan",
+  "difficulty": 5,
   "totalDistance": 12.5,
   "totalTime": 2.75,
   "rating": 4
