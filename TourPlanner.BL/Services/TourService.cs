@@ -37,4 +37,14 @@ public class TourService : ITourService
         }
         return false;
     }
+
+    public TourDto? GetById(int id)
+    {
+        if (_tours.ContainsKey(id))
+        {
+            return _tours[id];
+        }
+
+        return null;
+    }
 }

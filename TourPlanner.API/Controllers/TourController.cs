@@ -16,6 +16,16 @@ public class TourController : ControllerBase
     }
 
 
+    [HttpGet("{id}")]
+    public IActionResult GetbyId(int id)
+    {
+        var tours = _tourService.GetById(id);
+        if (tours == null)
+        {
+            return NoContent();
+        }
+        return Ok(tours);
+    }
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -31,7 +41,7 @@ public class TourController : ControllerBase
     public IActionResult Create(TourDto tour)
     {
         var addTour = _tourService.AddTour(tour);
-        return Ok();
+        return Ok(addTour);
     }
 
     [HttpPut("{id}")]
