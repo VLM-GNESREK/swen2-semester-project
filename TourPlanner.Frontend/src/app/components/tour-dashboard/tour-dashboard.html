@@ -1,57 +1,122 @@
-<h2>Tour Planner</h2>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Create Tour</h5>
+        </div>
 
-<div>
-  <h3>Create Tour</h3>
-  <input placeholder="Name" [(ngModel)]="newTour.name" required>
-  <input placeholder="From" [(ngModel)]="newTour.from" required>
-  <input placeholder="To" [(ngModel)]="newTour.to" required>
-  <input placeholder="Description" [(ngModel)]="newTour.description">
-  <select [(ngModel)]="newTour.transportType" required>
-    <option value="" disabled selected>Select transport type</option>
-    <option value="Car">Car</option>
-    <option value="Bicycle">Bicycle</option>
-    <option value="Walking">Walking</option>
-  </select>
-  <button (click)="addTour()">Add Tour</button>
+        <div class="card-body">
+          <form #createForm="ngForm" (ngSubmit)="addTour(createForm)">
+            
+            <div class="mb-3">
+              <label for="tourNameInput" class="form-label">Name</label>
+              <input type="text" id="tourNameInput" class="form-control" name="tourName" placeholder="Enter tour name" 
+                     [(ngModel)]="newTour.name" required #tourName="ngModel"
+                     [ngClass]="{'is-invalid': tourName.touched && tourName.invalid}">
+              @if (tourName.touched && tourName.invalid) 
+              {
+                <div class="invalid-feedback">Name is required.</div>
+              }
+            </div>
 
-</div>
+            <div class="mb-3">
+              <label for="tourFromInput" class="form-label">From</label>
+              <input type="text" id="tourFromInput" class="form-control" name="tourFrom" placeholder="Starting location" 
+                     [(ngModel)]="newTour.from" required #tourFrom="ngModel"
+                     [ngClass]="{'is-invalid': tourFrom.touched && tourFrom.invalid}">
+              @if (tourFrom.touched && tourFrom.invalid) 
+              {
+                <div class="invalid-feedback">Starting location is required.</div>
+              }
+            </div>
 
-<hr>
+            <div class="mb-3">
+              <label for="tourToInput" class="form-label">To</label>
+              <input type="text" id="tourToInput" class="form-control" name="tourTo" placeholder="Destination" 
+                     [(ngModel)]="newTour.to" required #tourTo="ngModel"
+                     [ngClass]="{'is-invalid': tourTo.touched && tourTo.invalid}">
+              @if (tourTo.touched && tourTo.invalid) 
+              {
+                <div class="invalid-feedback">Destination is required.</div>
+              }
+            </div>
 
-<div>
-  <h3>Tour List</h3>
-  @for (tour of toursUIonly; track tour.id) 
-  {
-    <div style="border:1px solid black; margin:5px; padding:5px;">
+            <div class="mb-3">
+              <label for="tourDescInput" class="form-label">Description</label>
+              <input type="text" id="tourDescInput" class="form-control" name="tourDesc" placeholder="Optional description" 
+                     [(ngModel)]="newTour.description">
+            </div>
 
-      @if (editingTourId === tour.id)
-      {
-        <input [(ngModel)]="editedTour.name" placeholder="Name">
-        <input [(ngModel)]="editedTour.from" placeholder="From">
-        <input [(ngModel)]="editedTour.to" placeholder="To">
-        <input [(ngModel)]="editedTour.description" placeholder="Description">
-        <select [(ngModel)]="editedTour.transportType" required>
-          <option value="" disabled selected>Select transport type</option>
-          <option value="Car">Car</option>
-          <option value="Bicycle">Bicycle</option>
-          <option value="Walking">Walking</option>
-        </select>
-        <input [(ngModel)]="editedTour.distance" placeholder="Distance">
-        <input [(ngModel)]="editedTour.estimatedTime" placeholder="Estimated Time">
-        <input [(ngModel)]="editedTour.routeInformation" placeholder="Route Info">
-        <button (click)="saveTour(tour.id)">Save</button>
-        <button (click)="cancelEdit()">Cancel</button>
-      }
+            <div class="mb-3">
+              <label for="tourTransportInput" class="form-label">Transport Type</label>
+              <select id="tourTransportInput" class="form-select" name="tourTransport" 
+                      [(ngModel)]="newTour.transportType" required #tourTransport="ngModel"
+                      [ngClass]="{'is-invalid': tourTransport.touched && tourTransport.invalid}">
+                <option value="" disabled selected>Select transport type</option>
+                <option value="Car">Car</option>
+                <option value="Bicycle">Bicycle</option>
+                <option value="Walking">Walking</option>
+              </select>
+              @if (tourTransport.touched && tourTransport.invalid) 
+              {
+                <div class="invalid-feedback">Transport type is required.</div>
+              }
+            </div>
 
-      @if (editingTourId !== tour.id)
-      {
-        <strong>{{ tour.name }}</strong><br>
-        {{ tour.from }} → {{ tour.to }}<br>
-        {{ tour.description }}<br>
-        <button (click)="editTour(tour)">Edit</button>
-        <button (click)="deleteTour(tour.id)">Delete</button>
-      }
-
+            <button type="submit" class="btn btn-primary w-100" [disabled]="createForm.invalid">Add Tour</button>
+          </form>
+        </div>
+      </div>
     </div>
-  }
+
+    <div class="col-md-8">
+      <h3>Tour List</h3>
+      <div class="list-group">
+        @for (tour of toursUIonly; track tour.id) 
+        {
+          <div class="list-group-item">
+
+            @if (editingTourId === tour.id) 
+            {
+              <div class="row g-2 mb-2">
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.name" placeholder="Name"></div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.from" placeholder="From"></div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.to" placeholder="To"></div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.description" placeholder="Description"></div>
+                <div class="col-sm-6">
+                  <select class="form-select" [(ngModel)]="editedTour.transportType" required>
+                    <option value="" disabled selected>Select transport type</option>
+                    <option value="Car">Car</option>
+                    <option value="Bicycle">Bicycle</option>
+                    <option value="Walking">Walking</option>
+                  </select>
+                </div>
+                <div class="col-sm-6"><input type="number" class="form-control" [(ngModel)]="editedTour.distance" placeholder="Distance"></div>
+                <div class="col-sm-6"><input type="number" class="form-control" [(ngModel)]="editedTour.estimatedTime" placeholder="Estimated Time"></div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.routeInformation" placeholder="Route Info"></div>
+              </div>
+              <button class="btn btn-sm btn-success me-2" (click)="saveTour(tour.id)">Save</button>
+              <button class="btn btn-sm btn-secondary" (click)="cancelEdit()">Cancel</button>
+            }
+
+            @if (editingTourId !== tour.id) 
+            {
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ tour.name }}</h5>
+                <small>{{ tour.transportType }}</small>
+              </div>
+              <p class="mb-1">{{ tour.from }} → {{ tour.to }}</p>
+              <small class="text-muted">{{ tour.description }}</small>
+              <div class="mt-2">
+                <button class="btn btn-sm btn-info me-2" [routerLink]="['/tours', tour.id]">View Details</button>
+                <button class="btn btn-sm btn-secondary me-2" (click)="editTour(tour)">Edit</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteTour(tour.id)">Delete</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
 </div>

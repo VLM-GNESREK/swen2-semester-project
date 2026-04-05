@@ -40,7 +40,7 @@ export class TourDetailsComponent implements OnInit
         next: tour =>
         {
           this.tour = tour;
-          this.changeDetectorRef.detectChanges(); 
+          this.changeDetectorRef.detectChanges();
         },
         error: err =>
         {
