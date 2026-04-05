@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 import { TourLogService } from '../../services/tourlogService';
 import { TourLog } from '../../models/tourlogModel';
 
@@ -62,13 +62,36 @@ export class TourLogsComponent implements OnInit
     });
   }
 
-  addLog(): void
+  addLog(form: NgForm): void
   {
-    this.tourLogService.createTourLog(this.tourId, this.newLog).subscribe(() =>
+    if(form.invalid) return;
+    const tempLog: TourLog =
+    {
+      ...this.newLog,
+      id: -500,
+    };
+
+    this.logs = [...this.logs, tempLog];
+
+
+    form.resetForm();
+
+    this.newLog =
+    {
+      id: 0,
+      tourID: this.tourId,
+      date: new Date().toISOString().split('T')[0],
+      username: '',
+      difficulty: 0,
+      totalDistance: 0,
+      totalTime: 0,
+      rating: 0,
+      comment:''
+    };
+
+    this.tourLogService.createTourLog(this.tourId, tempLog).subscribe(() =>
     {
       this.loadLogs();
-      this.newLog = { ...this.newLog, id: 0, username: '', difficulty: 0, totalDistance: 0, totalTime: 0, rating: 0, comment:''};
-
     });
   }
 
