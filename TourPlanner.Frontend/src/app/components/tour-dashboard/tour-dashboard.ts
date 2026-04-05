@@ -8,18 +8,19 @@ import {Component, ChangeDetectorRef} from '@angular/core';
 @Component
 ({
   selector: 'app-tour-dashboard',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './tour-dashboard.html',
   styleUrl: './tour-dashboard.scss',
 })
 
-export class TourDashboard 
-{
+export class TourDashboard {
   //so we can refresh data on the front end immediately while waiting for the "pull"
   toursUIonly: TourDtoAngular[] = [];
   newTour: TourDtoAngular = {id: 0, name: '', description: '', from: '', to: '', transportType: ''};
 
-  editingTourId: number | null = null; // stores which tour is being edited
+  //for storing Tour ID which is currently being edited
+  //and a empty TourDTOAngular
+  editingTourId: number | null = null;
   editedTour: TourDtoAngular = {} as TourDtoAngular;
 
 
@@ -31,79 +32,73 @@ export class TourDashboard
   ) {
   }
 
-  ngOnInit() 
-  {
-    this.tourService.getTours().subscribe(toursData => 
-    {
-      this.toursUIonly = toursData || [];
-      this.changeDetectorRef.detectChanges();
-    });
 
-    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => 
-    {
+  ngOnInit() {
+
+    this.getTours();
+
+    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => {
       this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  addTour() 
-  {
-    const tempTour: TourDtoAngular = 
-    {
-      id: -Date.now(),
-      name: this.newTour.name,
-      description: this.newTour.description,
-      from: this.newTour.from,
-      to: this.newTour.to,
-      transportType: this.newTour.transportType,
-      distance: this.newTour.distance,
-      estimatedTime: this.newTour.estimatedTime,
-      routeInformation: this.newTour.routeInformation
-    };
-    
-    this.toursUIonly = [...this.toursUIonly, tempTour];
-    this.newTour = 
-    { 
-      id: 0, 
-      name: '', 
-      description: '', 
-      from: '', 
-      to: '', 
-      transportType: '', 
-      distance: 0, 
-      estimatedTime: 0, 
-      routeInformation: '' 
-    };
+  getTours() {
+    this.tourService.getTours().subscribe(toursData => {
+      this.toursUIonly = toursData || [];
+      this.changeDetectorRef.detectChanges();
+    });
+  }
 
-    this.tourService.createTour(tempTour).subscribe(() => 
-    {  
-      this.tourService.getTours().subscribe(toursData => 
+  addTour() {
+    const tempTour: TourDtoAngular =
       {
-        this.toursUIonly = toursData || [];
-        this.changeDetectorRef.detectChanges();
-      });
+        id: -500,
+        name: this.newTour.name,
+        description: this.newTour.description,
+        from: this.newTour.from,
+        to: this.newTour.to,
+        transportType: this.newTour.transportType,
+        distance: this.newTour.distance,
+        estimatedTime: this.newTour.estimatedTime,
+        routeInformation: this.newTour.routeInformation
+      };
+
+    this.toursUIonly = [...this.toursUIonly, tempTour];
+    this.newTour =
+      {
+        id: 0,
+        name: '',
+        description: '',
+        from: '',
+        to: '',
+        transportType: '',
+        distance: 0,
+        estimatedTime: 0,
+        routeInformation: ''
+      };
+
+    this.tourService.createTour(tempTour).subscribe(() => {
+      this.getTours();
     });
   }
 
-  deleteTour(id: number) 
-  {
+  deleteTour(id: number) {
     this.toursUIonly = this.toursUIonly.filter(t => t.id !== id); // filter out tour we want to delete
     this.tourService.deleteTour(id).subscribe();
   }
 
-  editTour(tour: TourDtoAngular) 
-  {
+  editTour(tour: TourDtoAngular) {
     this.editingTourId = tour.id;
-    this.editedTour = { ...tour };
+    this.editedTour = {...tour};
   }
 
   cancelEdit() {
     this.editingTourId = null;
   }
 
-  saveTour(id: number) 
-  {
-    this.toursUIonly = this.toursUIonly.map(t => t.id === id ? { ...this.editedTour } : t);
+  saveTour(id: number) {
+    this.toursUIonly = this.toursUIonly.map(t => t.id === id ? {...this.editedTour} : t);
     this.editingTourId = null;
 
     this.tourService.updateTour(id, this.editedTour).subscribe();

@@ -6,6 +6,7 @@ public class TourLogDto
     public int TourId { get; set; }
     public DateTime Date { get; set; }
     public string Username { get; set; } = string.Empty;
+    public string Comment { get; set; } = string.Empty;
     public int Difficulty { get; set; }
     public double TotalDistance { get; set; }
     public double TotalTime { get; set; }

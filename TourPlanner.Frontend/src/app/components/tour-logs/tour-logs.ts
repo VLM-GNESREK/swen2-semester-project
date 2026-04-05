@@ -29,7 +29,8 @@ export class TourLogsComponent implements OnInit
     difficulty: 0,
     totalDistance: 0,
     totalTime: 0,
-    rating: 0
+    rating: 0,
+    comment:''
   };
 
   constructor(private route: ActivatedRoute, private tourLogService: TourLogService,private changeDetectorRef: ChangeDetectorRef) {}
@@ -66,7 +67,7 @@ export class TourLogsComponent implements OnInit
     this.tourLogService.createTourLog(this.tourId, this.newLog).subscribe(() =>
     {
       this.loadLogs();
-      this.newLog = { ...this.newLog, id: 0, username: '', difficulty: 0, totalDistance: 0, totalTime: 0, rating: 0 };
+      this.newLog = { ...this.newLog, id: 0, username: '', difficulty: 0, totalDistance: 0, totalTime: 0, rating: 0, comment:''};
 
     });
   }
