@@ -25,7 +25,7 @@ var app = builder.Build();
 // Apply CORS policy globally
 app.UseCors("AllowAngularApp");
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.MapControllers();
 
 app.MapGet("/", () => "Hello World!");
