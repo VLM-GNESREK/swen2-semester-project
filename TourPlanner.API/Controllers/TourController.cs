@@ -41,7 +41,7 @@ public class TourController : ControllerBase
     public IActionResult Create(TourDto tour)
     {
         var addTour = _tourService.AddTour(tour);
-        return Ok();
+        return Ok(addTour);
     }
 
     [HttpPut("{id}")]
@@ -63,6 +63,4 @@ public class TourController : ControllerBase
         }
         return NotFound();
     }
-    
-    
 }

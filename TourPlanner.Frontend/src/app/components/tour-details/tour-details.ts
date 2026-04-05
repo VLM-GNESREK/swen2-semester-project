@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectorRef} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TourDtoAngular } from '../../models/tourModel';
 import { ActivatedRoute } from '@angular/router';
@@ -15,7 +15,7 @@ import { TourService } from '../../services/tourService';
 
 export class TourDetailsComponent implements OnInit
 {
-  constructor(private route: ActivatedRoute, private tourService: TourService) {}
+  constructor(private route: ActivatedRoute, private tourService: TourService, private changeDetectorRef: ChangeDetectorRef) {}
 
   tour : TourDtoAngular | null = null;
 
@@ -24,7 +24,7 @@ export class TourDetailsComponent implements OnInit
 
     this.route.paramMap.subscribe(params =>
     {
-
+      console.log('Available Route Parameters:', params.keys);
       const idParam = params.get('id');
 
       if (idParam === null)
@@ -34,9 +34,18 @@ export class TourDetailsComponent implements OnInit
       }
 
       const id = +idParam; // '+' converts string to number
-      this.tourService.getTourById(id).subscribe(tour =>
+      console.log('Fetching data for ID:', id);
+      this.tourService.getTourById(id).subscribe(
       {
-        this.tour = tour;
+        next: tour =>
+        {
+          this.tour = tour;
+          this.changeDetectorRef.detectChanges(); 
+        },
+        error: err =>
+        {
+          console.error('Error fetching tour details:', err);
+        }
       });
     });
   }

@@ -17,7 +17,7 @@ export class TourDashboard
 {
   //so we can refresh data on the front end immediately while waiting for the "pull"
   toursUIonly: TourDtoAngular[] = [];
-  newTour: TourDtoAngular = {id: 0, name: 't', description: '', from: '', to: '', transportType: ''};
+  newTour: TourDtoAngular = {id: 0, name: '', description: '', from: '', to: '', transportType: ''};
 
   editingTourId: number | null = null; // stores which tour is being edited
   editedTour: TourDtoAngular = {} as TourDtoAngular;
@@ -35,13 +35,13 @@ export class TourDashboard
   {
     this.tourService.getTours().subscribe(toursData => 
     {
-      this.toursUIonly = toursData;
+      this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
 
     interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => 
     {
-      this.toursUIonly = toursData
+      this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
@@ -50,7 +50,7 @@ export class TourDashboard
   {
     const tempTour: TourDtoAngular = 
     {
-      id: 0,
+      id: -Date.now(),
       name: this.newTour.name,
       description: this.newTour.description,
       from: this.newTour.from,
@@ -60,20 +60,29 @@ export class TourDashboard
       estimatedTime: this.newTour.estimatedTime,
       routeInformation: this.newTour.routeInformation
     };
+    
     this.toursUIonly = [...this.toursUIonly, tempTour];
     this.newTour = 
-    {
-      id: 0,
-      name: 't',
-      description: '',
-      from: '',
-      to: '',
-      transportType: '',
-      distance: 0,
-      estimatedTime: 0,
-      routeInformation: ''
+    { 
+      id: 0, 
+      name: '', 
+      description: '', 
+      from: '', 
+      to: '', 
+      transportType: '', 
+      distance: 0, 
+      estimatedTime: 0, 
+      routeInformation: '' 
     };
-    this.tourService.createTour(tempTour).subscribe();
+
+    this.tourService.createTour(tempTour).subscribe(() => 
+    {  
+      this.tourService.getTours().subscribe(toursData => 
+      {
+        this.toursUIonly = toursData || [];
+        this.changeDetectorRef.detectChanges();
+      });
+    });
   }
 
   deleteTour(id: number) 

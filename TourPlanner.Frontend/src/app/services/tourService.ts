@@ -18,12 +18,9 @@ export class TourService
     return this.http.get<TourDtoAngular[]>(this.apiUrl);
   }
 
-  getTourById(id: number): Observable<TourDtoAngular>
+  getTourById(id: number): Observable<TourDtoAngular> 
   {
-    console.log("IM HERE");
-    var test = this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`);
-    console.log(this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`));
-    return test
+    return this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`); 
   }
 
   createTour(tour: TourDtoAngular)
