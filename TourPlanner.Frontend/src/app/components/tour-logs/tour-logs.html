@@ -47,15 +47,33 @@
                     @for (log of logs; track log.id)
                     {
                         <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ log.username }} - {{ log.date  | date:'fullDate' }}</h5>
-                                <small>Rating: {{ log.rating }}/5</small>
-                            </div>
-                            <p class="mb-1">
-                                <strong>Difficulty:</strong> {{ log.difficulty }} |
-                                <strong>Distance:</strong> {{ log.totalDistance }} km |
-                                <strong>Time:</strong> {{ log.totalTime }}
-                            </p>
+                            @if (editingLogId !== log.id)
+                            {
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ log.username }} - {{ log.date  | date:'fullDate' }}</h5>
+                                    <small>Rating: {{ log.rating }}/5</small>
+                                </div>
+                                <p class="mb-1">
+                                    <strong>Difficulty:</strong> {{ log.difficulty }} |
+                                    <strong>Distance:</strong> {{ log.totalDistance }} km |
+                                    <strong>Time:</strong> {{ log.totalTime }}
+                                </p>
+                                <button class="btn btn-sm btn-secondary mt-2" (click)="editLog(log)">Edit</button>
+                            }
+                            @if (editingLogId === log.id)
+                            {
+                                <div class="mt-2">
+                                    <label class="form-label">Edit Log</label>
+                                    <input type="date" class="form-control mb-2" [(ngModel)]="editedLog.date">
+                                    <input type="text" class="form-control mb-2" [(ngModel)]="editedLog.username">
+                                    <input type="number" class="form-control mb-2" [(ngModel)]="editedLog.totalDistance">
+                                    <input type="number" class="form-control mb-2" [(ngModel)]="editedLog.totalTime">
+                                    <input type="number" class="form-control mb-2" [(ngModel)]="editedLog.rating" min="1" max="5">
+                                    <input type="number" class="form-control mb-2" [(ngModel)]="editedLog.difficulty" min="1" max="5">
+                                    <button class="btn btn-success me-2" (click)="saveLog(log.id)">Save</button>
+                                    <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+                                </div>
+                            }
                             <button class="btn btn-sm btn-danger mt-2" (click)="deleteLog(log.id)">Delete</button>
                         </div>
                     }

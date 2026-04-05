@@ -1,6 +1,5 @@
 <h2>Tour Planner</h2>
 
-<!-- Create Tour -->
 <div>
   <h3>Create Tour</h3>
   <input placeholder="Name" [(ngModel)]="newTour.name" required>
@@ -19,14 +18,14 @@
 
 <hr>
 
-<!-- Tour List -->
 <div>
   <h3>Tour List</h3>
-  @for (tour of toursUIonly; track tour.id) {
+  @for (tour of toursUIonly; track tour.id) 
+  {
     <div style="border:1px solid black; margin:5px; padding:5px;">
 
-      <!-- Edit mode -->
-      <div *ngIf="editingTourId === tour.id">
+      @if (editingTourId === tour.id)
+      {
         <input [(ngModel)]="editedTour.name" placeholder="Name">
         <input [(ngModel)]="editedTour.from" placeholder="From">
         <input [(ngModel)]="editedTour.to" placeholder="To">
@@ -42,16 +41,16 @@
         <input [(ngModel)]="editedTour.routeInformation" placeholder="Route Info">
         <button (click)="saveTour(tour.id)">Save</button>
         <button (click)="cancelEdit()">Cancel</button>
-      </div>
+      }
 
-      <!-- Display mode -->
-      <div *ngIf="editingTourId !== tour.id">
+      @if (editingTourId !== tour.id)
+      {
         <strong>{{ tour.name }}</strong><br>
         {{ tour.from }} → {{ tour.to }}<br>
         {{ tour.description }}<br>
         <button (click)="editTour(tour)">Edit</button>
         <button (click)="deleteTour(tour.id)">Delete</button>
-      </div>
+      }
 
     </div>
   }

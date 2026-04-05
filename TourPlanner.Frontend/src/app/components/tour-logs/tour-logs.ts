@@ -17,6 +17,8 @@ export class TourLogsComponent implements OnInit
 {
   tourId: number = 0;
   logs: TourLog[] = [];
+  editingLogId: number | null = null;
+  editedLog: TourLog = {} as TourLog;
 
   newLog: TourLog =
   {
@@ -76,4 +78,22 @@ export class TourLogsComponent implements OnInit
       this.loadLogs();
     });
   }
+
+  editLog(Log: TourLog): void
+  {
+    this.editingLogId = Log.id;
+    this.editedLog = { ...Log };
+  }
+
+  cancelEdit(): void
+  {
+    this.editingLogId = null;
+  }
+
+  saveLog(logID: number): void
+  {
+     this.logs = this.logs.map(l => l.id === logID ? { ...this.editedLog } : l);
+     this.editingLogId = null;
+     this.tourLogService.updateTourLog(this.tourId, logID, this.editedLog).subscribe();
+   }
 }
