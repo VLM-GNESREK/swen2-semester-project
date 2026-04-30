@@ -22,7 +22,7 @@ public class TourController : ControllerBase
         var tours = _tourService.GetById(id);
         if (tours == null)
         {
-            return NoContent();
+            return NotFound();
         }
         return Ok(tours);
     }

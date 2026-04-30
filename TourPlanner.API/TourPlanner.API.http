@@ -1,6 +1,6 @@
 @ip = http://localhost:5239
 ### get all tours
-GET {{ip}}/api/tours
+GET {{ip}}/api/tours/
 
 ### post new tour
 POST {{ip}}/api/tours
@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ############ UPDATE TOUR LOG
-PUT {{ip}}/api/tours/0/logs/1
+PUT {{ip}}/api/tours/0/logs/
 Content-Type: application/json
 
 {
@@ -54,4 +54,7 @@ Content-Type: application/json
 ############ DELETE TOUR LOG
 DELETE {{ip}}/api/tours/0/logs/0
 
+
+#### CAT FACT TEST
+GET {{ip}}/api/cat
 

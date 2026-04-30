@@ -7,6 +7,14 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourLogService, TourLogService>();
 
+builder.Services.AddSingleton<ICatFactService, CatFactService>();
+
+builder.Services.AddHttpClient("CatFactApi", client =>
+{
+    client.BaseAddress = new Uri("https://catfact.ninja/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+
 
 // Add CORS services
 //for some reason we need CORS because our server doenst like how angular handles stuff?

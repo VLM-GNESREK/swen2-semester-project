@@ -1,5 +1,7 @@
 import { TourService } from '../../services/tourService';
+import { CatFactService } from '../../services/catFactService';
 import { TourDtoAngular } from '../../models/tourModel';
+import { catFactModel } from '../../models/catFactModel';
 import {RouterLink} from '@angular/router';
 import {AsyncPipe, CommonModule} from '@angular/common';
 import {FormsModule, NgForm} from '@angular/forms';
@@ -14,7 +16,7 @@ import {Component, ChangeDetectorRef} from '@angular/core';
   styleUrl: './tour-dashboard.scss',
 })
 
-export class TourDashboard 
+export class TourDashboard
 {
   //so we can refresh data on the front end immediately while waiting for the "pull"
   toursUIonly: TourDtoAngular[] = [];
@@ -24,10 +26,15 @@ export class TourDashboard
   //and a empty TourDTOAngular
   editingTourId: number | null = null;
   editedTour: TourDtoAngular = {} as TourDtoAngular;
+  catFact: catFactModel = {
+    fact: "CAT FACT",
+    length: 8
+  }
 
 
   constructor(
     private tourService: TourService,
+    private catFactService: CatFactService,
     //we need change detector because Angular doesnt see new data when switching maps for whatever reason
     //change detector forces the visual update
     private changeDetectorRef: ChangeDetectorRef
@@ -35,27 +42,37 @@ export class TourDashboard
   }
 
 
-  ngOnInit() 
+  ngOnInit()
   {
     this.getTours();
 
-    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => 
+    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData =>
     {
       this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  getTours() 
+  getTours()
   {
-    this.tourService.getTours().subscribe(toursData => 
+    this.tourService.getTours().subscribe(toursData =>
     {
       this.toursUIonly = toursData || [];
+      this.getCatFact()
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  addTour(form: NgForm) 
+  getCatFact(){
+    this.catFactService.getCat().subscribe(catFact =>
+    {
+      this.catFact = catFact || [];
+      this.changeDetectorRef.detectChanges();
+
+    });
+  }
+
+  addTour(form: NgForm)
   {
     if(form.invalid) return;
     const tempTour: TourDtoAngular =
@@ -88,13 +105,13 @@ export class TourDashboard
       routeInformation: ''
     };
 
-    this.tourService.createTour(tempTour).subscribe(() => 
+    this.tourService.createTour(tempTour).subscribe(() =>
     {
       this.getTours();
     });
   }
 
-  deleteTour(id: number) 
+  deleteTour(id: number)
   {
     this.toursUIonly = this.toursUIonly.filter(t => t.id !== id); // filter out tour we want to delete
     this.tourService.deleteTour(id).subscribe();
