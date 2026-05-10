@@ -8,6 +8,8 @@ builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourLogService, TourLogService>();
 
 builder.Services.AddSingleton<ICatFactService, CatFactService>();
+builder.Services.AddScoped<IContactService, ContactService>();
+
 
 builder.Services.AddHttpClient("CatFactApi", client =>
 {

@@ -1,0 +1,31 @@
+﻿@ip = http://localhost:5239
+### GET CONTACT
+GET {{ip}}/api/contacts/
+
+### POST CONTACT
+POST {{ip}}/api/contacts
+Content-Type: application/json
+
+  {
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "phoneNumber": "+43123456789",
+    "address": "Vienna, Austria"
+  }
+
+### UPDATE CONTACT 
+PUT {{ip}}/api/contacts/0
+Content-Type: application/json
+
+{
+  "firstName": "Sercan",
+  "lastName": "Koc",
+  "email": "john.doe@example.com",
+  "phoneNumber": "122",
+  "address": "Vienna, Austria"
+}
+### DELETE CONTACT
+DELETE {{ip}}/api/contacts/0
+
