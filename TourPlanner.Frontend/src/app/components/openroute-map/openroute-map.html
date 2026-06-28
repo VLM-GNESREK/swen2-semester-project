@@ -1,0 +1,38 @@
+<section class="layout">
+
+  <section class="panel">
+
+    <h2>Leaflet Map (Facade-backed)</h2>
+
+    <p class="muted">
+      Demo goals:
+      Leaflet + OSM tiles (visible map), facade boundary, signals as state, <code>effect()</code> triggers side effects.
+    </p>
+
+    <div class="buttons">
+      <button type="button" class="btn" (click)="onLoadDemoRoute()" [disabled]="mapStorage.isLoading()">
+        @if (mapStorage.isLoading()) { Loading… } @else { Load demo route (FHTW → Stephansdom) }
+      </button>
+
+      <button type="button" class="btn ghost" (click)="onClearRoute()" [disabled]="!mapStorage.hasRoute()">
+        Clear route
+      </button>
+    </div>
+
+    <div class="status">
+      <div>Route loaded: <b>{{ mapStorage.hasRoute() }}</b></div>
+      <div>Center: <b>{{ mapStorage.center().lat.toFixed(4) }}, {{ mapStorage.center().lng.toFixed(4) }}</b></div>
+      <div>Zoom: <b>{{ mapStorage.zoom() }}</b></div>
+    </div>
+
+    @if (mapStorage.error()) {
+      <div class="error">Error: {{ mapStorage.error() }}</div>
+    }
+
+  </section>
+
+  <section class="mapCard">
+    <div id="map" class="map"></div>
+  </section>
+
+</section>

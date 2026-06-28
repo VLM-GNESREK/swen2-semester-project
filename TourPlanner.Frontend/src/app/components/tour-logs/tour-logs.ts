@@ -33,7 +33,8 @@ export class TourLogsComponent implements OnInit
     comment:''
   };
 
-  constructor(private route: ActivatedRoute, private tourLogService: TourLogService,private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private route: ActivatedRoute, private tourLogService: TourLogService,
+              private changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void
   {

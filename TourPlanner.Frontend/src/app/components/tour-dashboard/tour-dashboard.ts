@@ -14,7 +14,7 @@ import {Component, ChangeDetectorRef} from '@angular/core';
   styleUrl: './tour-dashboard.scss',
 })
 
-export class TourDashboard 
+export class TourDashboard
 {
   //so we can refresh data on the front end immediately while waiting for the "pull"
   toursUIonly: TourDtoAngular[] = [];
@@ -35,27 +35,27 @@ export class TourDashboard
   }
 
 
-  ngOnInit() 
+  ngOnInit()
   {
     this.getTours();
 
-    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData => 
+    interval(5000).pipe(switchMap(() => this.tourService.getTours())).subscribe(toursData =>
     {
       this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  getTours() 
+  getTours()
   {
-    this.tourService.getTours().subscribe(toursData => 
+    this.tourService.getTours().subscribe(toursData =>
     {
       this.toursUIonly = toursData || [];
       this.changeDetectorRef.detectChanges();
     });
   }
 
-  addTour(form: NgForm) 
+  addTour(form: NgForm)
   {
     if(form.invalid) return;
     const tempTour: TourDtoAngular =
@@ -88,13 +88,13 @@ export class TourDashboard
       routeInformation: ''
     };
 
-    this.tourService.createTour(tempTour).subscribe(() => 
+    this.tourService.createTour(tempTour).subscribe(() =>
     {
       this.getTours();
     });
   }
 
-  deleteTour(id: number) 
+  deleteTour(id: number)
   {
     this.toursUIonly = this.toursUIonly.filter(t => t.id !== id); // filter out tour we want to delete
     this.tourService.deleteTour(id).subscribe();

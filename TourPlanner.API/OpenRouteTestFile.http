@@ -1,0 +1,23 @@
+﻿
+@baseUrl = https://api.openrouteservice.org/
+@apiKey = eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImNlNmNiZWUxYTZjOTRhNWJhN2YyNGY4ODJjOWI2MzBhIiwiaCI6Im11cm11cjY0In0=
+
+### GeoCode-Search FHTW
+@address1=Höchstädtplatz%206%201200%20Wien
+@routeType=driving-car
+
+@cord1=16.378317
+@cord2=48.238992
+### GET request to example server
+GET {{baseUrl}}geocode/search?api_key={{apiKey}}&text={{address1}}
+###
+
+GET {{baseUrl}}/v2/directions/{{routeType}}/geojson?api_key={{apiKey}}&start=16.377631,48.239223&end=16.372924,48.209379
+
+### GEOJSON
+POST {{baseUrl}}/v2/directions/{{routeType}}/geojson
+Authorization: {{apiKey}}
+Accept: application/json, application/geo+json
+Content-Type: application/json
+
+{"coordinates":[[8.681495,49.41461],[8.686507,49.41943],[8.687872,49.420318]]}

@@ -1,5 +1,5 @@
 <div class="container mt-5">
-    @if (tour) 
+    @if (tour)
     {
         <div class="row">
             <div class="col-md-8 offset-md-2">
@@ -24,15 +24,16 @@
                         </div>
                         <div class="mt-3">
                             <p><strong>Route Information:</strong></p>
-                            <img src="https://staticmapmaker.com/img/google-placeholder.png" alt="Route Map Placeholder" class="img-fluid rounded border">
+                            <app-map-page></app-map-page>
+                            <!--<img src="https://staticmapmaker.com/img/google-placeholder.png" alt="Route Map Placeholder" class="img-fluid rounded border">-->
                         </div>
                         <button class="btn btn-primary mt-4" [routerLink]="['/tours', tour.id, 'logs']">View Logs</button>
                     </div>
                 </div>
             </div>
         </div>
-    } 
-    @else 
+    }
+    @else
     {
         <p>Tour not found.</p>
     }
