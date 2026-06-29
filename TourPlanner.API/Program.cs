@@ -1,6 +1,7 @@
 using TourPlanner.BL.Interfaces;
 using TourPlanner.BL.Services;
 using TourPlanner.DAL;
+using TourPlanner.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourLogService, TourLogService>();
 builder.Services.AddDbContext<TourPlannerDBContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+builder.Services.AddScoped<ITourRepository, TourRepository>();
 
 // Add CORS services
 //for some reason we need CORS because our server doenst like how angular handles stuff?
