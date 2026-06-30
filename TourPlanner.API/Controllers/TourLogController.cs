@@ -29,14 +29,14 @@ public class TourLogController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(int tourId, TourLogDto tour)
+    public IActionResult Create(int tourId, TourLogDTO tour)
     {
         var addTour = _tourLogService.AddTourLog(tourId, tour);
         return Ok();
     }
 
     [HttpPut("{tourLogId}")]
-    public IActionResult Update(int tourId,int tourLogId,TourLogDto tour)
+    public IActionResult Update(int tourId,int tourLogId,TourLogDTO tour)
     {
         if (_tourLogService.UpdateTourLog(tourId, tourLogId,tour))
         {

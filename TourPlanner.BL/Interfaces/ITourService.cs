@@ -6,9 +6,9 @@ public interface ITourService
 {
    
     
-    public List<TourDto> GetTours();
-    public bool AddTour(TourDto tour);
+    public List<TourDTO> GetTours();
+    public bool AddTour(TourDTO tour);
     public bool DeleteToru(int id);
-    public bool UpdateTour(int id, TourDto tour);
-    public TourDto? GetById(int id);
+    public bool UpdateTour(int id, TourDTO tour);
+    public TourDTO? GetById(int id);
 }

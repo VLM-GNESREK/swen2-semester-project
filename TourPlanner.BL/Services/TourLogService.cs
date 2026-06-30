@@ -6,30 +6,30 @@ namespace TourPlanner.BL.Services;
 public class TourLogService : ITourLogService
 {
     //ja vincent, hattest recht, wir brauchen eine Dictionary in Dictionary XD
-    private static Dictionary<int, Dictionary<int, TourLogDto>> _tourLogs = new Dictionary<int, Dictionary<int, TourLogDto>>();
+    private static Dictionary<int, Dictionary<int, TourLogDTO>> _tourLogs = new Dictionary<int, Dictionary<int, TourLogDTO>>();
     private static int tourLogId = 0;
-    public List<TourLogDto> GetTourLogs(int tourId)
+    public List<TourLogDTO> GetTourLogs(int tourId)
     {
         if (!_tourLogs.ContainsKey(tourId)||_tourLogs[tourId].Count == 0)
         {
-            return new List<TourLogDto>();
+            return new List<TourLogDTO>();
         }
         return _tourLogs[tourId].Values.ToList();
     }
 
-    public bool AddTourLog(int tourId, TourLogDto tourLog)
+    public bool AddTourLog(int tourId, TourLogDTO tourLog)
     {
-        tourLog.Id = tourLogId++;
+        tourLog.ID = tourLogId++;
         if (!_tourLogs.ContainsKey(tourId))
         {
-            _tourLogs.Add(tourId, new Dictionary<int, TourLogDto>());
+            _tourLogs.Add(tourId, new Dictionary<int, TourLogDTO>());
         }
-        if(_tourLogs[tourId].ContainsKey(tourLog.Id))
+        if(_tourLogs[tourId].ContainsKey(tourLog.ID))
         {
             return false;
         }
         
-        _tourLogs[tourId].Add(tourLog.Id, tourLog);
+        _tourLogs[tourId].Add(tourLog.ID, tourLog);
         return true;
     }
 
@@ -42,14 +42,14 @@ public class TourLogService : ITourLogService
         return _tourLogs[tourId].Remove(tourLogId);
     }
 
-    public bool UpdateTourLog(int tourId, int tourLogId, TourLogDto tourLog)
+    public bool UpdateTourLog(int tourId, int tourLogId, TourLogDTO tourLog)
     {
-        if (!_tourLogs.ContainsKey(tourId) || !_tourLogs[tourId].ContainsKey(tourLog.Id))
+        if (!_tourLogs.ContainsKey(tourId) || !_tourLogs[tourId].ContainsKey(tourLog.ID))
         {
             return false;
         }
         
-        tourLog.Id = tourLogId;
+        tourLog.ID = tourLogId;
         
         _tourLogs[tourId][tourLogId] = tourLog;
 

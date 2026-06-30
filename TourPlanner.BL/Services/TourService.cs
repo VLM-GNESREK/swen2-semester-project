@@ -6,18 +6,18 @@ namespace TourPlanner.BL.Services;
 public class TourService : ITourService
 {
     //TODO implement DAL layer later on
-    private static Dictionary<int, TourDto> _tours = new Dictionary<int, TourDto>();
+    private static Dictionary<int, TourDTO> _tours = new Dictionary<int, TourDTO>();
     private static int _tourId = 0;
     
-    public List<TourDto> GetTours()
+    public List<TourDTO> GetTours()
     {
         return _tours.Values.ToList();
     }
 
-    public bool AddTour(TourDto tour)
+    public bool AddTour(TourDTO tour)
     {
-        tour.Id = _tourId++;
-        _tours.Add(tour.Id, tour);
+        tour.ID = _tourId++;
+        _tours.Add(tour.ID, tour);
         return true;
     }
 
@@ -27,18 +27,18 @@ public class TourService : ITourService
         
     }
 
-    public bool UpdateTour(int id, TourDto tour)
+    public bool UpdateTour(int id, TourDTO tour)
     {
         if (_tours.ContainsKey(id))
         {
-            tour.Id = id;
+            tour.ID = id;
             _tours[id] = tour;
             return true;
         }
         return false;
     }
 
-    public TourDto? GetById(int id)
+    public TourDTO? GetById(int id)
     {
         if (_tours.ContainsKey(id))
         {
