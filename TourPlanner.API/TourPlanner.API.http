@@ -7,7 +7,8 @@ POST {{ip}}/api/tours
 Content-Type: application/json
 
 {"name":"XD","description":"fda","from":"fdsa","to":"fdsa", "transportType": "Bike",
-"distance": 4000.3, "estimatedTime": 40.2}
+"distance": 4000.3, "estimatedTime": 40.2, "fromCoordinate": {"lat": 48.192140901, "lng": 16.339604 },
+"toCoordinate": {"lat": 48.20849, "lng": 16.37306}}
 
 ### Update Tour
 PUT {{ip}}/api/tours/0

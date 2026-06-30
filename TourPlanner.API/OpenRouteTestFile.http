@@ -17,7 +17,7 @@ GET {{baseUrl}}/v2/directions/{{routeType}}/geojson?api_key={{apiKey}}&start=16.
 ### GEOJSON
 POST {{baseUrl}}/v2/directions/{{routeType}}/geojson
 Authorization: {{apiKey}}
-Accept: application/json, application/geo+json
+Accept:application/geo+json
 Content-Type: application/json
 
-{"coordinates":[[8.681495,49.41461],[8.686507,49.41943],[8.687872,49.420318]]}
+{"coordinates":[[16.377631,48.239223],[16.372924,48.209379]]}

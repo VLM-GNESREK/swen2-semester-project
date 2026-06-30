@@ -1,12 +1,13 @@
-import { Component, AfterViewInit, effect, inject, signal } from '@angular/core';
+import { Component, AfterViewInit, effect, inject, signal} from '@angular/core';
 import { OpenrouteManager } from '../../services/openroute/openroute-manager';
 import { OpenrouteMapmaker } from '../../services/openroute/openroute-mapmaker';
+import {Coords} from '../../models/openroute-coords';
 
 @Component({
   selector: 'app-map-page',
   standalone: true,
   templateUrl: './openroute-map.html',
-  styleUrls: ['./openroute-map.scss'],
+  styleUrls: ['./openroute-map.scss']
 })
 export class OpenrouteMap implements AfterViewInit {
   //this saves coordinates and stuff in one class with signals
@@ -21,6 +22,8 @@ export class OpenrouteMap implements AfterViewInit {
   async ngAfterViewInit(): Promise<void> {
     await this.mapDrawer.initMap('map');
     this.mapReady.set(true);
+
+
   }
 
   constructor() {
@@ -43,12 +46,9 @@ export class OpenrouteMap implements AfterViewInit {
 
       this.mapDrawer.setMarker('from', route.from.lat, route.from.lng);
       this.mapDrawer.setMarker('to', route.to.lat, route.to.lng);
-      this.mapDrawer.setRoute(route.points);
+      var coords: Coords[] = [route.to, route.from];
+      this.mapDrawer.setRoute(coords);
     });
-  }
-
-  onLoadDemoRoute(): void {
-    this.mapStorage.loadDemoRoute();
   }
 
   onClearRoute(): void {

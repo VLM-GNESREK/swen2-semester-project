@@ -1,6 +1,6 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { LatLng } from '../../models/openroute-coords';
+import { Coords } from '../../models/openroute-coords';
 
 type LeafletModule = typeof import('leaflet');
 
@@ -25,6 +25,11 @@ export class OpenrouteMapmaker {
   /**
    * SSR-safe init: Leaflet touches `window` on import -> load only in browser.
    */
+
+  ngAfterViewChecked(): void {
+    this.map!.invalidateSize(true);
+    //this.map.center = this.center;
+  }
   async initMap(containerId: string): Promise<void> {
     //skip if not on browser
     if (!isPlatformBrowser(this.platformId)) return;
@@ -37,7 +42,6 @@ export class OpenrouteMapmaker {
       zoomControl: true,
       attributionControl: true,
     });
-
     // Base tiles (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -46,16 +50,18 @@ export class OpenrouteMapmaker {
 
     // Default view: Vienna
     this.map.setView([48.2083, 16.3731], 12);
+
   }
 
   setCenter(lat: number, lng: number, zoom = 13): void {
     this.map?.setView([lat, lng], zoom);
+    console.log("IM SETTING CENTER")
   }
 
   setMarker(kind: 'from' | 'to', lat: number, lng: number): void {
     if (!this.map || !this.L) return;
     const L = this.L;
-
+    console.log("IM SETTING MARKERS")
     const m = L.circleMarker([lat, lng], {
       radius: 8,
       weight: 2,
@@ -74,13 +80,14 @@ export class OpenrouteMapmaker {
     }
   }
 
-  setRoute(points: readonly LatLng[]): void {
+  setRoute(points: readonly Coords[]): void {
+    console.log("IM SETTING ROUTE")
     if (!this.map || !this.L) return;
     const L = this.L;
 
     this.routeLine?.remove();
 
-    const latlngs: import('leaflet').LatLngExpression[] = points.map(p => [p.lat, p.lng]);
+    const latlngs: import('leaflet').LatLngExpression[] = points.map(p => [p.lat!, p.lng!]);
     this.routeLine = L.polyline(latlngs, { weight: 5, opacity: 0.85 }).addTo(this.map);
 
     const bounds = this.routeLine.getBounds();

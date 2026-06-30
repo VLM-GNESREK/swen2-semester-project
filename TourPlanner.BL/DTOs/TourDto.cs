@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace TourPlanner.BL.DTOs;
 
 public class TourDto
@@ -11,4 +13,6 @@ public class TourDto
     public double Distance { get; set; }
     public double EstimatedTime { get; set; }
     public string RouteInformation { get; set; }= string.Empty;
+    public Coords FromCoordinate { get; set; }= new Coords();
+    public Coords ToCoordinate { get; set; }= new Coords();
 }

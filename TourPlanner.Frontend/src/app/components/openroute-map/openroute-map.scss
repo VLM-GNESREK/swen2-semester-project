@@ -1,0 +1,77 @@
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.panel {
+  padding: 14px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+}
+
+.panel h2 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.muted {
+  opacity: 0.82;
+  line-height: 1.35;
+  margin: 0 0 12px 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0 12px 0;
+}
+
+.btn {
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.10);
+  color: #e6e6e6;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.status {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,80,80,0.35);
+  background: rgba(255,80,80,0.10);
+}
+
+.mapCard {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Critical: Leaflet needs an explicit height */
+.map {
+  height: calc(100vh - 120px);
+  min-height: 520px;
+  width: 100%;
+}
