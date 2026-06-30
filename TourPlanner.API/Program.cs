@@ -12,6 +12,7 @@ builder.Services.AddScoped<ITourLogService, TourLogService>();
 builder.Services.AddDbContext<TourPlannerDBContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<ITourLogRepository, TourLogRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Add CORS services
 //for some reason we need CORS because our server doenst like how angular handles stuff?
