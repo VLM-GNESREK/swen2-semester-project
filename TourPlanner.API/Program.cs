@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); 
 builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourLogService, TourLogService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<TourPlannerDBContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<ITourLogRepository, TourLogRepository>();

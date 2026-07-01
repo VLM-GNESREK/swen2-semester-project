@@ -25,11 +25,23 @@ namespace TourPlanner.DAL.Repositories
             }
         }
 
-        public async Task<Tour?> GetTourByIDAsync(int tourID)
+        public async Task<Tour?> GetTourByTourIDAsync(int tourID)
         {
             try
             {
                 return await _context.Tours.FirstOrDefaultAsync(t => t.tour_id == tourID);
+            }
+            catch(Exception ex)
+            {
+                throw new DataAccessException("An unexpected error occurred whilst trying to fetch the tour. (DAL2)", ex);
+            }        
+        }
+
+        public async Task<IEnumerable<Tour>> GetToursByUserIDAsync(int userID)
+        {
+            try
+            {
+                return await _context.Tours.Where(t => t.user_id == userID).ToListAsync();
             }
             catch(Exception ex)
             {

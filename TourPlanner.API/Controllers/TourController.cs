@@ -38,14 +38,14 @@ public class TourController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(TourDto tour)
+    public IActionResult Create(TourDTO tour)
     {
         var addTour = _tourService.AddTour(tour);
         return Ok(addTour);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id,TourDto tour)
+    public IActionResult Update(int id,TourDTO tour)
     {
         if (_tourService.UpdateTour(id, tour))
         {
