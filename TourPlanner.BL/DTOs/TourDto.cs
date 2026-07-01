@@ -1,4 +1,5 @@
 using System.Drawing;
+using TourPlanner.BL.Services;
 
 namespace TourPlanner.BL.DTOs;
 
@@ -9,10 +10,6 @@ public class TourDto
     public string Description { get; set; }= string.Empty;
     public string From { get; set; }= string.Empty;
     public string To { get; set; }= string.Empty;
-    public string TransportType { get; set; } = string.Empty;
-    public double Distance { get; set; }
-    public double EstimatedTime { get; set; }
     public string RouteInformation { get; set; }= string.Empty;
-    public Coords FromCoordinate { get; set; }= new Coords();
-    public Coords ToCoordinate { get; set; }= new Coords();
+    public OpenRoute OpenRoute { get; set; } = new OpenRoute();
 }

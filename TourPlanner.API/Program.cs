@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); 
 builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourLogService, TourLogService>();
+builder.Services.AddScoped<IOpenRouteService, OpenRouteService>();
+//for requesting stuff from openroute
+builder.Services.AddHttpClient<IOpenRouteService, OpenRouteService>();
 
 
 // Add CORS services

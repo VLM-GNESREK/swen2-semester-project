@@ -9,10 +9,12 @@ namespace TourPlanner.API.Controllers;
 public class TourController : ControllerBase
 {
     private readonly ITourService _tourService;
+    private readonly IOpenRouteService _openRouteService;
 
-    public TourController(ITourService tourService)
+    public TourController(ITourService tourService, IOpenRouteService openRouteService)
     {
         _tourService = tourService;
+        _openRouteService = openRouteService;
     }
 
 
@@ -38,8 +40,11 @@ public class TourController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(TourDto tour)
+    public async Task<IActionResult> Create(TourDto tour)
     {
+        
+        var updatedOpenRoute =  await _openRouteService.GetRoute(tour.OpenRoute);
+        tour.OpenRoute = updatedOpenRoute;
         var addTour = _tourService.AddTour(tour);
         return Ok(addTour);
     }

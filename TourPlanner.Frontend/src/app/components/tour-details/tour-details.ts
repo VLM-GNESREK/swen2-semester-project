@@ -42,7 +42,7 @@ export class TourDetailsComponent implements OnInit {
           next: tour => {
             this.tour = tour;
             console.log(this.tour);
-            this.routeManager.loadRoute(tour.fromCoordinate!, tour.toCoordinate!);
+            this.routeManager.loadRoute(tour.openRoute!.toFromCoords.fromCoord!, tour.openRoute!.toFromCoords.toCoord!);
             this.changeDetectorRef.detectChanges();
           },
           error: err => {

@@ -17,14 +17,14 @@
                 <p><strong>ID:</strong> {{ tour.id }}</p>
                 <p><strong>Name:</strong> {{ tour.name }}</p>
                 <p><strong>Description:</strong> {{ tour.description }}</p>
-                <p><strong>Transport Type:</strong> {{ tour.transportType }}</p>
+                <p><strong>Transport Type:</strong> {{ tour.openRoute!.transportType }}</p>
               </div>
 
               <div class="col-md-6">
-                <p><strong>From:</strong> {{ tour.from }} {{ tour.fromCoordinate!.lat }} {{ tour.fromCoordinate!.lng }} </p>
+                <p><strong>From:</strong> {{ tour.from }}</p>
                 <p><strong>To:</strong> {{ tour.to }}</p>
-                <p><strong>Distance:</strong> {{ tour.distance }} km</p>
-                <p><strong>Estimated Time:</strong> {{ tour.estimatedTime }}</p>
+                <p><strong>Distance:</strong> {{ tour.openRoute!.distance }} km</p>
+                <p><strong>Estimated Time:</strong> {{ tour.openRoute!.duration }}</p>
 
               </div>
             </div>

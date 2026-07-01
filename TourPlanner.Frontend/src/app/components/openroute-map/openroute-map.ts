@@ -44,9 +44,9 @@ export class OpenrouteMap implements AfterViewInit {
         return;
       }
 
-      this.mapDrawer.setMarker('from', route.from.lat, route.from.lng);
-      this.mapDrawer.setMarker('to', route.to.lat, route.to.lng);
-      var coords: Coords[] = [route.to, route.from];
+      this.mapDrawer.setMarker('from', route.fromCoord.lat, route.fromCoord.lng);
+      this.mapDrawer.setMarker('to', route.toCoord.lat, route.toCoord.lng);
+      var coords: Coords[] = [route.fromCoord, route.toCoord];
       this.mapDrawer.setRoute(coords);
     });
   }

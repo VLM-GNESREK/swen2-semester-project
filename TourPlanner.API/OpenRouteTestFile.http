@@ -1,23 +1,31 @@
-﻿
-@baseUrl = https://api.openrouteservice.org/
+﻿@appUrl = http://localhost:5239
+@openRouteService = api/openroute
+@openRouteUrl = https://api.openrouteservice.org/
 @apiKey = eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImNlNmNiZWUxYTZjOTRhNWJhN2YyNGY4ODJjOWI2MzBhIiwiaCI6Im11cm11cjY0In0=
 
 ### GeoCode-Search FHTW
-@address1=Höchstädtplatz%206%201200%20Wien
+@address1=FH wien
+@searchTerm=fh wien
 @routeType=driving-car
 
 @cord1=16.378317
 @cord2=48.238992
 ### GET request to example server
-GET {{baseUrl}}geocode/search?api_key={{apiKey}}&text={{address1}}
+GET {{openRouteUrl}}geocode/search?api_key={{apiKey}}&text={{address1}}
 ###
 
-GET {{baseUrl}}/v2/directions/{{routeType}}/geojson?api_key={{apiKey}}&start=16.377631,48.239223&end=16.372924,48.209379
+GET {{openRouteUrl}}/v2/directions/{{routeType}}/geojson?api_key={{apiKey}}&start=16.377631,48.239223&end=16.372924,48.209379
 
 ### GEOJSON
-POST {{baseUrl}}/v2/directions/{{routeType}}/geojson
+POST {{openRouteUrl}}/v2/directions/{{routeType}}/geojson
 Authorization: {{apiKey}}
 Accept:application/geo+json
 Content-Type: application/json
 
 {"coordinates":[[16.377631,48.239223],[16.372924,48.209379]]}
+
+### AUTO COMPLEETEYESYEY
+GET https://api.openrouteservice.org/geocode/autocomplete?api_key={{apiKey}}&text={{searchTerm}}&size=3
+
+### TEST AUTCOMPLETE SERVICE
+GET {{appUrl}}/{{openRouteService}}/to/{{searchTerm}}

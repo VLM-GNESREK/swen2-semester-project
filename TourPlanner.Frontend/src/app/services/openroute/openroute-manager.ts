@@ -42,8 +42,8 @@ export class OpenrouteManager {// Vienna defaults
       lng: (from.lng! + to.lng!) / 2,
     });
     var tempToFrom = {} as ToFromCoords;
-    tempToFrom.to=to;
-    tempToFrom.from=from;
+    tempToFrom.toCoord=to;
+    tempToFrom.fromCoord=from;
     this.route.set(tempToFrom);
     this.zoom.set(13);
     this.isLoading.set(false);
