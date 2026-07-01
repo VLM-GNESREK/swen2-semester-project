@@ -81,8 +81,13 @@ namespace TourPlanner.BL.Services
 
         public async Task<TourDTO> AddTourAsync(TourDTO tourDTO, int userID)
         {
+            const double MaxChildFriendlyDistance = 10000;
+            const int MaxChildFriendlyTime = 10800; 
+
             try
             {
+                bool initialChildFriendly = tourDTO.Distance <= MaxChildFriendlyDistance && tourDTO.EstimatedTime <= MaxChildFriendlyTime;
+
                 var tour = new Tour
                 {
                     tour_name = tourDTO.Name,
@@ -94,7 +99,7 @@ namespace TourPlanner.BL.Services
                     estimatedTime = tourDTO.EstimatedTime,
                     routeImagePath = tourDTO.ImageRouteInformation,
                     popularity = tourDTO.Popularity,
-                    childFriendly = tourDTO.IsChildFriendly ? 1 : 0,
+                    childFriendly = initialChildFriendly ? 1 : 0,
                     user_id = userID
                 };
 
