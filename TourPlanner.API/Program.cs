@@ -2,9 +2,16 @@ using TourPlanner.BL.Interfaces;
 using TourPlanner.BL.Services;
 using TourPlanner.DAL;
 using TourPlanner.DAL.Repositories;
+using TourPlanner.API.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddLog4Net("log4net.config");
 
 builder.Services.AddControllers(); 
 builder.Services.AddScoped<ITourService, TourService>();
@@ -14,6 +21,22 @@ builder.Services.AddDbContext<TourPlannerDBContext>(options => options.UseNpgsql
 builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<ITourLogRepository, TourLogRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    var secretKey = builder.Configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("JWT secret key is not configured.");
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+    };
+});
 
 // Add CORS services
 //for some reason we need CORS because our server doenst like how angular handles stuff?
@@ -29,8 +52,11 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 // Apply CORS policy globally
 app.UseCors("AllowAngularApp");
+app.UseAuthentication();
+app.UseAuthorization();
 
 // app.UseHttpsRedirection();
 app.MapControllers();
