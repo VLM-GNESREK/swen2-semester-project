@@ -64,9 +64,13 @@ namespace TourPlanner.BL.Services
                 }
 
                 var tour = await _tourRepository.GetTourByTourIDAsync(log.tour_id);
+                if(tour == null)
+                {
+                    throw new BusinessException("Not Found: Tour not found. (BL13)");
+                }
                 if(tour.user_id != userID)
                 {
-                    throw new BusinessException("Unauthorised: User has insufficient permissions to access this tour log. (BL13)");
+                    throw new BusinessException("Unauthorised: User has insufficient permissions to access this tour log. (BL14)");
                 }
 
                 return new TourLogDTO
@@ -82,7 +86,7 @@ namespace TourPlanner.BL.Services
             }
             catch(DataAccessException ex)
             {
-                throw new BusinessException("Failed to retrieve tour log. (BL14)", ex);
+                throw new BusinessException("Failed to retrieve tour log. (BL15)", ex);
             }
         }
 
@@ -93,11 +97,11 @@ namespace TourPlanner.BL.Services
                 var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
                 if(tour == null)
                 {
-                    throw new BusinessException("Not Found: Tour not found. (BL15)");
+                    throw new BusinessException("Not Found: Tour not found. (BL16)");
                 }
                 if(tour.user_id != userID)
                 {
-                    throw new BusinessException("Unauthorised: User has insufficient permissions to add a log to this tour. (BL16)");
+                    throw new BusinessException("Unauthorised: User has insufficient permissions to add a log to this tour. (BL17)");
                 }
 
                 var newLog = new TourLog
@@ -119,7 +123,7 @@ namespace TourPlanner.BL.Services
             }
             catch(DataAccessException ex)
             {
-                throw new BusinessException("Failed to add tour log. (BL17)", ex);
+                throw new BusinessException("Failed to add tour log. (BL18)", ex);
             }
         }
 
@@ -132,19 +136,19 @@ namespace TourPlanner.BL.Services
 
                 if(tour == null)
                 {
-                    throw new BusinessException("Not Found: Tour not found. (BL18)");
+                    throw new BusinessException("Not Found: Tour not found. (BL19)");
                 }
                 if(tour.user_id != userID)
                 {
-                    throw new BusinessException("Unauthorised: User has insufficient permissions to update a log for this tour. (BL19)");
+                    throw new BusinessException("Forbidden: User has insufficient permissions to update a log for this tour. (BL20)");
                 }
                 if(existingLog == null)
                 {
-                    throw new BusinessException("Not Found: Tour log not found. (BL20)");
+                    throw new BusinessException("Not Found: Tour log not found. (BL21)");
                 }
                 if(existingLog.tour_id != tourID)
                 {
-                    throw new BusinessException("Bad Request: Tour log does not belong to the specified tour. (BL21)");
+                    throw new BusinessException("Bad Request: Tour log does not belong to the specified tour. (BL22)");
                 }
 
                 existingLog.logDateTime = tourLog.Date;
@@ -159,7 +163,7 @@ namespace TourPlanner.BL.Services
             }
             catch(DataAccessException ex)
             {
-                throw new BusinessException("Failed to update tour log. (BL22)", ex);
+                throw new BusinessException("Failed to update tour log. (BL23)", ex);
             }
         }
 
@@ -172,19 +176,19 @@ namespace TourPlanner.BL.Services
 
                 if(tour == null)
                 {
-                    throw new BusinessException("Not Found: Tour not found. (BL23)");
+                    throw new BusinessException("Not Found: Tour not found. (BL24)");
                 }
                 if(tour.user_id != userID)
                 {
-                    throw new BusinessException("Unauthorised: User has insufficient permissions to delete a log for this tour. (BL24)");
+                    throw new BusinessException("Forbidden: User has insufficient permissions to delete a log for this tour. (BL25)");
                 }
                 if(existingLog == null)
                 {
-                    throw new BusinessException("Not Found: Tour log not found. (BL25)");
+                    throw new BusinessException("Not Found: Tour log not found. (BL26)");
                 }
                 if(existingLog.tour_id != tourID)
                 {
-                    throw new BusinessException("Bad Request: Tour log does not belong to the specified tour. (BL26)");
+                    throw new BusinessException("Bad Request: Tour log does not belong to the specified tour. (BL27)");
                 }
 
                 await _tourLogRepository.DeleteTourLogAsync(tourLogID);
@@ -192,7 +196,7 @@ namespace TourPlanner.BL.Services
             }
             catch(DataAccessException ex)
             {
-                throw new BusinessException("Failed to delete tour log. (BL27)", ex);
+                throw new BusinessException("Failed to delete tour log. (BL28)", ex);
             }
         }
 
@@ -203,7 +207,7 @@ namespace TourPlanner.BL.Services
 
             if(tour == null)
             {
-                throw new BusinessException("Not Found: Tour not found, how did you even get here? (BL28)");
+                throw new BusinessException("Not Found: Tour not found, how did you even get here? (BL29)");
             }
 
             tour.popularity = logs.Count();

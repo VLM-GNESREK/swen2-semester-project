@@ -5,6 +5,6 @@ namespace TourPlanner.BL.Interfaces
     public interface IUserService
     {
         Task RegisterUserAsync(UserRegistrationDTO registrationDTO);
-        Task<AuthResponseDTO> LoginUserAsync(string username, string password);
+        Task<AuthResponseDTO> LoginUserAsync(UserLoginDTO loginDTO);
     }
 }

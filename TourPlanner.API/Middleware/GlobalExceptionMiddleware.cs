@@ -39,6 +39,7 @@ namespace TourPlanner.API.Middleware
             if(ex.Message.Contains("Not Found", StringComparison.OrdinalIgnoreCase)) return (int)HttpStatusCode.NotFound;
             if(ex.Message.Contains("Bad Request", StringComparison.OrdinalIgnoreCase)) return (int)HttpStatusCode.BadRequest;
             if(ex.Message.Contains("Conflict", StringComparison.OrdinalIgnoreCase)) return (int)HttpStatusCode.Conflict;
+            if(ex.Message.Contains("Forbidden", StringComparison.OrdinalIgnoreCase)) return (int)HttpStatusCode.Forbidden;
 
             if(ex.InnerException != null)
             {
