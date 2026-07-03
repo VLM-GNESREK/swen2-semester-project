@@ -94,6 +94,7 @@ namespace TourPlanner.BL.Services
         {
             try
             {
+                Console.WriteLine("TOURLOGG STUFF: "+tourLog.Date);
                 var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
                 if(tour == null)
                 {
@@ -114,7 +115,11 @@ namespace TourPlanner.BL.Services
                     totalTime = tourLog.TotalTime,
                     rating = tourLog.Rating
                 };
-
+                //no timezones in frontend, we just convert it to UTC
+                newLog.logDateTime = DateTime.SpecifyKind(
+                    newLog.logDateTime.ToUniversalTime(),
+                    DateTimeKind.Utc
+                );
                 var createdLog = await _tourLogRepository.AddTourLogAsync(newLog);
                 await RecalculateComputedAttributesAsync(tourId);
 
@@ -157,7 +162,11 @@ namespace TourPlanner.BL.Services
                 existingLog.totalDistance = tourLog.TotalDistance;
                 existingLog.totalTime = tourLog.TotalTime;
                 existingLog.rating = tourLog.Rating;
-
+                //no timezones in frontend, we just convert it to UTC
+                existingLog.logDateTime = DateTime.SpecifyKind(
+                    existingLog.logDateTime.ToUniversalTime(),
+                    DateTimeKind.Utc
+                );
                 await _tourLogRepository.UpdateTourLogAsync(existingLog);
                 await RecalculateComputedAttributesAsync(tourId);
             }

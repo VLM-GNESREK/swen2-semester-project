@@ -108,6 +108,7 @@ export class TourLogsComponent implements OnInit
   {
     this.editingLogId = Log.id;
     this.editedLog = { ...Log };
+    this.editedLog.date = this.formatDateForInput(Log.date);
   }
 
   cancelEdit(): void
@@ -121,4 +122,10 @@ export class TourLogsComponent implements OnInit
      this.editingLogId = null;
      this.tourLogService.updateTourLog(this.tourId, logID, this.editedLog).subscribe();
    }
+   //db uses different time stamp
+  private formatDateForInput(date: string | Date): string
+  {
+    const newDate = new Date(date);
+    return newDate.toISOString().split('T')[0];
+  }
 }

@@ -10,7 +10,6 @@
 
           <div class="card-body">
 
-            <!-- Tour information -->
             <div class="row">
               <div class="col-md-6">
                 <p><strong>ID:</strong> {{ tour.id }}</p>
@@ -26,14 +25,13 @@
                 <p><strong>Estimated Time:</strong> {{ durationHH }}h {{ durationMM }}m</p>
 
               </div>
+              <div class="col-md-6">
+                <p><strong>Child
+                  Friendly:</strong> {{ tour.isChildFriendly != null ? tour.isChildFriendly : "no info" }}</p>
+                <p><strong>Popularity:</strong> {{ tour.popularity != null ? tour.popularity : "no info" }}</p>
+              </div>
             </div>
 
-            <hr class="my-4">
-
-            <!-- Map -->
-            <h5 class="mb-3">Route Information</h5>
-
-            <app-map-page></app-map-page>
 
             <div class="mt-4">
               <button
@@ -42,6 +40,12 @@
                 View Logs
               </button>
             </div>
+
+            <hr class="my-4">
+
+            <!-- our Map -->
+            <h5 class="mb-3">Route Information</h5>
+            <app-map-page></app-map-page>
 
           </div>
         </div>
