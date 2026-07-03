@@ -1,8 +1,4 @@
-using NUnit.Framework;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TourPlanner.BL.Services;
 using TourPlanner.DAL.Repositories;
 using TourPlanner.DAL.Entities;
