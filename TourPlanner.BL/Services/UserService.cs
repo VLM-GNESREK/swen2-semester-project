@@ -31,16 +31,16 @@ namespace TourPlanner.BL.Services
                 var existingUser = await _userRepository.GetUserByUsernameAsync(registrationDTO.Username);
                 if(existingUser != null)
                 {
-                    throw new BusinessException("Conflict: Username already exists. (BL29)");
+                    throw new BusinessException("Conflict: Username already exists. (BL30)");
                 }
                 if(registrationDTO.Password.Length < 16)
                 {
-                    throw new BusinessException("Bad Request: Password must be at least 16 characters long. (BL30)");
+                    throw new BusinessException("Bad Request: Password must be at least 16 characters long. (BL31)");
                 }
                 var complexityPattern = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$");
                 if(!complexityPattern.IsMatch(registrationDTO.Password))
                 {
-                    throw new BusinessException("Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (BL31)");
+                    throw new BusinessException("Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (BL32)");
                 }
 
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
@@ -55,18 +55,18 @@ namespace TourPlanner.BL.Services
             }
             catch(DataAccessException ex)
             {
-                throw new BusinessException("Failed to register user. (BL32)", ex);
+                throw new BusinessException("Failed to register user. (BL33)", ex);
             }
         }
 
-        public async Task<AuthResponseDTO> LoginUserAsync(string username, string password)
+        public async Task<AuthResponseDTO> LoginUserAsync(UserLoginDTO loginDTO)
         {
             try
             {
-                var user = await _userRepository.GetUserByUsernameAsync(username);
-                if(user == null || !BCrypt.Net.BCrypt.Verify(password, user.pw_hash))
+                var user = await _userRepository.GetUserByUsernameAsync(loginDTO.Username);
+                if(user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.pw_hash))
                 {
-                    throw new BusinessException("Unauthorised: Invalid username or password. (BL33)");
+                    throw new BusinessException("Unauthorised: Invalid username or password. (BL34)");
                 }
 
                 string token = GenerateJwtToken(user);
@@ -79,7 +79,7 @@ namespace TourPlanner.BL.Services
             }
             catch(DataAccessException ex)
             {
-                throw new BusinessException("Failed to login user. (BL34)", ex);
+                throw new BusinessException("Failed to login user. (BL35)", ex);
             }
         }
 
