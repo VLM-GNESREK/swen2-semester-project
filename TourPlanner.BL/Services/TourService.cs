@@ -20,7 +20,7 @@ namespace TourPlanner.BL.Services
         {
             try
             {
-                var tours = await _tourRepository.GetToursByUserIDAsync(userId);
+                var tours = await _tourRepository.GetAllToursAsync();
 
                 return tours.Select(t => new TourDTO
                 {
@@ -72,12 +72,7 @@ namespace TourPlanner.BL.Services
                 {
                     return null;
                 }
-
-                if (tour.user_id != userId)
-                {
-                    throw new BusinessException(
-                        "Forbidden: Tour unable to be retrieved due to insufficient permissions. (BL2)");
-                }
+                
 
                 return new TourDTO
                 {

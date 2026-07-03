@@ -9,6 +9,7 @@ namespace TourPlanner.DAL.Entities
         public int log_id { get; set; }
         public DateTime logDateTime { get; set; }
         public string? comment { get; set; }
+        public string Username { get; set; }
         public int difficulty { get; set; }
         public double totalDistance { get; set; }
         public int totalTime { get; set; }

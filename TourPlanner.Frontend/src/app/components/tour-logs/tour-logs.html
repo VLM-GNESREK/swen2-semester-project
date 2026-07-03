@@ -8,35 +8,24 @@
 
         <div class="card-body">
           <form #createLogForm="ngForm" (ngSubmit)="addLog(createLogForm)">
-            
+
             <div class="mb-3">
               <label for="logDateInput" class="form-label">Date</label>
-              <input type="date" id="logDateInput" class="form-control" name="logDate" 
+              <input type="date" id="logDateInput" class="form-control" name="logDate"
                      [(ngModel)]="newLog.date" required #logDate="ngModel"
                      [ngClass]="{'is-invalid': logDate.touched && logDate.invalid}">
-              @if (logDate.touched && logDate.invalid) 
+              @if (logDate.touched && logDate.invalid)
               {
                 <div class="invalid-feedback">Date is required.</div>
               }
             </div>
 
             <div class="mb-3">
-              <label for="logUserInput" class="form-label">User Name</label>
-              <input type="text" id="logUserInput" class="form-control" name="logUser" placeholder="Enter username"
-                     [(ngModel)]="newLog.username" required #logUser="ngModel"
-                     [ngClass]="{'is-invalid': logUser.touched && logUser.invalid}">
-              @if (logUser.touched && logUser.invalid) 
-              {
-                <div class="invalid-feedback">Username is required.</div>
-              }
-            </div>
-
-            <div class="mb-3">
               <label for="logDistanceInput" class="form-label">Distance (km)</label>
-              <input type="number" id="logDistanceInput" class="form-control" name="logDistance" 
+              <input type="number" id="logDistanceInput" class="form-control" name="logDistance"
                      [(ngModel)]="newLog.totalDistance" required min="0" #logDistance="ngModel"
                      [ngClass]="{'is-invalid': logDistance.touched && logDistance.invalid}">
-              @if (logDistance.touched && logDistance.invalid) 
+              @if (logDistance.touched && logDistance.invalid)
               {
                 <div class="invalid-feedback">Valid distance is required.</div>
               }
@@ -44,10 +33,10 @@
 
             <div class="mb-3">
               <label for="logTimeInput" class="form-label">Total Time (minutes)</label>
-              <input type="number" id="logTimeInput" class="form-control" name="logTime" 
+              <input type="number" id="logTimeInput" class="form-control" name="logTime"
                      [(ngModel)]="newLog.totalTime" required min="0" #logTime="ngModel"
                      [ngClass]="{'is-invalid': logTime.touched && logTime.invalid}">
-              @if (logTime.touched && logTime.invalid) 
+              @if (logTime.touched && logTime.invalid)
               {
                 <div class="invalid-feedback">Valid time is required.</div>
               }
@@ -55,7 +44,7 @@
 
             <div class="mb-3">
               <label for="logRatingInput" class="form-label">Rating (1-5)</label>
-              <input type="number" id="logRatingInput" class="form-control" name="logRating" 
+              <input type="number" id="logRatingInput" class="form-control" name="logRating"
                      [(ngModel)]="newLog.rating" required min="1" max="5" #logRating="ngModel"
                      [ngClass]="{'is-invalid': logRating.touched && logRating.invalid}">
               @if (logRating.touched && logRating.invalid) {
@@ -65,10 +54,10 @@
 
             <div class="mb-3">
               <label for="logDifficultyInput" class="form-label">Difficulty (1-5)</label>
-              <input type="number" id="logDifficultyInput" class="form-control" name="logDifficulty" 
+              <input type="number" id="logDifficultyInput" class="form-control" name="logDifficulty"
                      [(ngModel)]="newLog.difficulty" required min="1" max="5" #logDifficulty="ngModel"
                      [ngClass]="{'is-invalid': logDifficulty.touched && logDifficulty.invalid}">
-              @if (logDifficulty.touched && logDifficulty.invalid) 
+              @if (logDifficulty.touched && logDifficulty.invalid)
               {
                 <div class="invalid-feedback">Difficulty must be between 1 and 5.</div>
               }
@@ -76,7 +65,7 @@
 
             <div class="mb-3">
               <label for="logCommentInput" class="form-label">Comment</label>
-              <input type="text" id="logCommentInput" class="form-control" name="logComment" 
+              <input type="text" id="logCommentInput" class="form-control" name="logComment"
                      [(ngModel)]="newLog.comment">
             </div>
 
@@ -88,19 +77,19 @@
 
     <div class="col-md-8">
       <h3>Tour Logs</h3>
-      @if (logs.length === 0) 
+      @if (logs.length === 0)
       {
         <div class="alert alert-info">No logs found for this tour.</div>
-      } 
-      @else 
+      }
+      @else
       {
         <div class="list-group">
-          @for (log of logs; track log.id) 
+          @for (log of logs; track log.id)
           {
 
             <div class="list-group-item">
-              
-              @if (editingLogId !== log.id) 
+
+              @if (editingLogId !== log.id)
               {
                 <div class="d-flex w-100 justify-content-between">
                   <h5 class="mb-1">{{ log.username }} - {{ log.date | date:'fullDate' }}</h5>
@@ -118,16 +107,12 @@
                 <button class="btn btn-sm btn-danger mt-2" (click)="deleteLog(log.id)">Delete</button>
               }
 
-              @if (editingLogId === log.id) 
+              @if (editingLogId === log.id)
               {
                 <div class="mt-2 row g-2">
                   <div class="col-sm-6">
                     <label class="form-label small">Date</label>
                     <input type="date" class="form-control form-control-sm" [(ngModel)]="editedLog.date" required>
-                  </div>
-                  <div class="col-sm-6">
-                    <label class="form-label small">Username</label>
-                    <input type="text" class="form-control form-control-sm" [(ngModel)]="editedLog.username" required>
                   </div>
                   <div class="col-sm-4">
                     <label class="form-label small">Distance</label>

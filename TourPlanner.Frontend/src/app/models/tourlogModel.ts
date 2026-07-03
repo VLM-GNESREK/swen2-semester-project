@@ -4,7 +4,7 @@ export interface TourLog
     tourID: number;
     // string is fine, for whatever reason back end can auto parse it
     date: string; // Or Date if you prefer?
-    username: string;
+    username?: string;
     comment?: string;
     difficulty: number;
     rating: number;
