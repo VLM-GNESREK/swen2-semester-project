@@ -582,4 +582,4 @@ FodyWeavers.xsd
 # Security
 *.env
 
-TourPlanner.DAL/Migrations/*
+TourPlanner.DAL/Migrations
