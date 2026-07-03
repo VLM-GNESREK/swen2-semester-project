@@ -2,4 +2,5 @@
   <Project Path="TourPlanner.API/TourPlanner.API.csproj" />
   <Project Path="TourPlanner.BL/TourPlanner.BL.csproj" />
   <Project Path="TourPlanner.DAL/TourPlanner.DAL.csproj" />
+  <Project Path="TourPlanner.Tests/TourPlanner.Tests.csproj" />
 </Solution>

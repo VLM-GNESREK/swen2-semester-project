@@ -54,8 +54,6 @@ namespace TourPlanner.BL.Services
                 
                 var result = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registrationDto.Password));
                 var passwordHash = Convert.ToBase64String(result);
-                
-                Console.WriteLine("HASHED PASSWORD " + passwordHash);
 
                 var newUser = new User
                 {
@@ -84,8 +82,6 @@ namespace TourPlanner.BL.Services
                 var result = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(loginDto.Password));
                 if (user == null || Convert.ToBase64String(result) != user!.pw_hash)
                 {
-                    Console.WriteLine("PASSWORD HASH: "+user!.pw_hash);
-                    Console.WriteLine("RESULT OF HASH: " + Convert.ToBase64String(result));
                     throw new BusinessException("Unauthorised: Invalid username or password. (BL34)");
                 }
                 /*
