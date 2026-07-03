@@ -58,11 +58,11 @@ export class OpenrouteMapmaker {
     console.log("IM SETTING CENTER")
   }
 
-  setMarker(kind: 'from' | 'to', lat: number, lng: number): void {
+  setMarker(kind: 'from' | 'to', coord: Coords): void {
     if (!this.map || !this.L) return;
     const L = this.L;
     console.log("IM SETTING MARKERS")
-    const m = L.circleMarker([lat, lng], {
+    const m = L.circleMarker([coord.lat, coord.lng], {
       radius: 8,
       weight: 2,
       opacity: 1,
@@ -72,11 +72,11 @@ export class OpenrouteMapmaker {
     if (kind === 'from') {
       this.markerFrom?.remove();
       this.markerFrom = m.addTo(this.map);
-      this.markerFrom.bindTooltip('From', { permanent: false });
+      this.markerFrom.bindTooltip(coord.name!=null ? coord.name! : 'From', { permanent: true });
     } else {
       this.markerTo?.remove();
       this.markerTo = m.addTo(this.map);
-      this.markerTo.bindTooltip('To', { permanent: false });
+      this.markerTo.bindTooltip(coord.name!=null ? coord.name! : 'To', { permanent: true });
     }
   }
 

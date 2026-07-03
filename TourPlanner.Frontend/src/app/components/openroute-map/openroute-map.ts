@@ -43,11 +43,12 @@ export class OpenrouteMap implements AfterViewInit {
         this.mapDrawer.clearRoute();
         return;
       }
+      const fromCoord = this.mapStorage.from();
+      const toCoord = this.mapStorage.to();
 
-      this.mapDrawer.setMarker('from', route.fromCoord.lat, route.fromCoord.lng);
-      this.mapDrawer.setMarker('to', route.toCoord.lat, route.toCoord.lng);
-      var coords: Coords[] = [route.fromCoord, route.toCoord];
-      this.mapDrawer.setRoute(coords);
+      this.mapDrawer.setMarker('from', fromCoord);
+      this.mapDrawer.setMarker('to', toCoord);
+      this.mapDrawer.setRoute(route);
     });
   }
 

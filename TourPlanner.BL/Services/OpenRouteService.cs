@@ -101,9 +101,11 @@ public class OpenRouteService : IOpenRouteService
         var geometry = feature
             .GetProperty("geometry")
             .GetProperty("coordinates");
-
+        
+        //distance is returned in METERS
         openRoute.Distance = (decimal)summary.GetProperty("distance").GetDouble();
         openRoute.Duration = (decimal)summary.GetProperty("duration").GetDouble();
+        
         
 
 
@@ -111,8 +113,8 @@ public class OpenRouteService : IOpenRouteService
         {
             openRoute.Steps.Add(new Coords
             {
-                Lat = (decimal)point[0].GetDouble(),
-                Lng = (decimal)point[1].GetDouble()
+                Lng = (decimal)point[0].GetDouble(),
+                Lat = (decimal)point[1].GetDouble()
             });
         }
 

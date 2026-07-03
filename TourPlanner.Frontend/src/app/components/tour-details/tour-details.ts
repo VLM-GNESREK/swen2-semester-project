@@ -42,7 +42,7 @@ export class TourDetailsComponent implements OnInit {
           next: tour => {
             this.tour = tour;
             console.log(this.tour);
-            this.routeManager.loadRoute(tour.openRoute!.toFromCoords.fromCoord!, tour.openRoute!.toFromCoords.toCoord!);
+            this.routeManager.loadRoute(tour.openRoute!.toFromCoords.fromCoord!, tour.openRoute!.toFromCoords.toCoord!,tour.openRoute?.steps!);
             this.changeDetectorRef.detectChanges();
           },
           error: err => {
@@ -50,5 +50,18 @@ export class TourDetailsComponent implements OnInit {
           }
         });
     });
+  }
+  get distanceKm(): number {
+    const distance = this.tour!.openRoute?.distance;
+    return distance && distance !== 0 ? distance / 1000 : 0;
+  }
+  get durationHH(): number {
+    const seconds = Math.floor(this.tour!.openRoute?.duration ?? 0);
+    return Math.floor(seconds / 3600);
+  }
+
+  get durationMM(): number {
+    const seconds = Math.floor(this.tour!.openRoute?.duration ?? 0);
+    return Math.floor((seconds % 3600) / 60);
   }
 }

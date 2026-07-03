@@ -1,6 +1,5 @@
 <div class="container mt-5">
-  @if (tour)
-  {
+  @if (tour) {
     <div class="row justify-content-center">
       <div class="col-lg-10 col-xl-9">
 
@@ -23,8 +22,8 @@
               <div class="col-md-6">
                 <p><strong>From:</strong> {{ tour.from }}</p>
                 <p><strong>To:</strong> {{ tour.to }}</p>
-                <p><strong>Distance:</strong> {{ tour.openRoute!.distance }} km</p>
-                <p><strong>Estimated Time:</strong> {{ tour.openRoute!.duration }}</p>
+                <p><strong>Distance:</strong> {{ distanceKm }} km</p>
+                <p><strong>Estimated Time:</strong> {{ durationHH }}h {{ durationMM }}m</p>
 
               </div>
             </div>
@@ -49,9 +48,7 @@
 
       </div>
     </div>
-  }
-  @else
-  {
+  } @else {
     <p>Tour not found.</p>
   }
 </div>

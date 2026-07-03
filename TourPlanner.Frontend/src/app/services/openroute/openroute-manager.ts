@@ -17,7 +17,7 @@ export class OpenrouteManager {// Vienna defaults
   readonly error = signal<string | null>(null);
 
   // Route result (null until loaded)
-  route = signal<ToFromCoords | null>(null);
+  route = signal<Coords[] | null>(null);
 
   // Derived state
   readonly hasRoute = computed(() => this.route() !== null);
@@ -33,7 +33,7 @@ export class OpenrouteManager {// Vienna defaults
   /**
    * Loads the demo route using a simulated external API.
    */
-  loadRoute(from: Coords, to: Coords): void {
+  loadRoute(from: Coords, to: Coords, points: Coords[]): void {
     this.isLoading.set(true);
     this.error.set(null);
 
@@ -41,10 +41,9 @@ export class OpenrouteManager {// Vienna defaults
       lat: (from.lat! + to.lat!) / 2,
       lng: (from.lng! + to.lng!) / 2,
     });
-    var tempToFrom = {} as ToFromCoords;
-    tempToFrom.toCoord=to;
-    tempToFrom.fromCoord=from;
-    this.route.set(tempToFrom);
+    this.route.set(points);
+    this.from.set(from);
+    this.to.set(to);
     this.zoom.set(13);
     this.isLoading.set(false);
   }
