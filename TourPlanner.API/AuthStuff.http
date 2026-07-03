@@ -1,0 +1,26 @@
+﻿@ip = http://localhost:5239
+@reg = api/auth/register
+@log = api/auth/login
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3IiwidW5pcXVlX25hbWUiOiJzZXJjYW44IiwianRpIjoiNWRjMmMyMjktZWE4Mi00NDhjLTg4NGMtNjc3OTE1NmQxYWRmIiwibmJmIjoxNzgzMDg4NTg3LCJleHAiOjE3ODMwOTU3ODcsImlhdCI6MTc4MzA4ODU4NywiaXNzIjoiVG91clBsYW5uZXJBUEkiLCJhdWQiOiJUb3VyUGxhbm5lckZyb250ZW5kIn0.3dhT6S_a07oDcIQ7slQy3bE6jZVfWStMcutgDS8rPKc
+### post new tour
+POST {{ip}}/api/tours
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{"name":"XD","description":"fda","from":"fdsa","to":"fdsa", "openRoute":
+{"ToFromCoords":{"FromCoord": {"lat": 48.192140901, "lng": 16.339604 },
+  "ToCoord": {"lat": 48.20849, "lng": 16.37306}},
+  "transportType": "driving-car"
+}}
+
+### Try register
+POST {{ip}}/{{reg}}
+Content-Type: application/json
+
+{"username":"sercan8", "password": "A!3pi/authapi/authapi/authapi/auth"}
+
+### Try loign
+POST {{ip}}/{{log}}
+Content-Type: application/json
+
+{"username":"sercan8", "password": "A!3pi/authapi/authapi/authapi/auth"}

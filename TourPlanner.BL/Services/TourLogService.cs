@@ -18,22 +18,22 @@ namespace TourPlanner.BL.Services
             _tourRepository = tourRepository;
         }
 
-        public async Task<IEnumerable<TourLogDTO>> GetTourLogsAsync(int tourID, int userID)
+        public async Task<IEnumerable<TourLogDTO>> GetTourLogsAsync(int tourId, int userId)
         {
             try
             {
-                var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
+                var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
 
                 if(tour == null)
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL10)");
                 }
-                if(tour.user_id != userID)
+                if(tour.user_id != userId)
                 {
                     throw new BusinessException("Unauthorised: User has insufficient permissions to access this tour's logs. (BL11)");
                 }
 
-                var logs = await _tourLogRepository.GetTourLogsByTourIDAsync(tourID);
+                var logs = await _tourLogRepository.GetTourLogsByTourIDAsync(tourId);
 
                 return logs.Select(log => new TourLogDTO
                 {
@@ -52,11 +52,11 @@ namespace TourPlanner.BL.Services
             }
         }
 
-        public async Task<TourLogDTO?> GetTourLogByTourLogIDAsync(int logID, int userID)
+        public async Task<TourLogDTO?> GetTourLogByTourLogIDAsync(int logId, int userId)
         {
             try
             {
-                var log = await _tourLogRepository.GetTourLogByIDAsync(logID);
+                var log = await _tourLogRepository.GetTourLogByIDAsync(logId);
 
                 if(log == null)
                 {
@@ -68,7 +68,7 @@ namespace TourPlanner.BL.Services
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL13)");
                 }
-                if(tour.user_id != userID)
+                if(tour.user_id != userId)
                 {
                     throw new BusinessException("Unauthorised: User has insufficient permissions to access this tour log. (BL14)");
                 }
@@ -90,23 +90,23 @@ namespace TourPlanner.BL.Services
             }
         }
 
-        public async Task<TourLogDTO> AddTourLogAsync(TourLogDTO tourLog, int tourID, int userID)
+        public async Task<TourLogDTO> AddTourLogAsync(TourLogDTO tourLog, int tourId, int userId)
         {
             try
             {
-                var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
+                var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
                 if(tour == null)
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL16)");
                 }
-                if(tour.user_id != userID)
+                if(tour.user_id != userId)
                 {
                     throw new BusinessException("Unauthorised: User has insufficient permissions to add a log to this tour. (BL17)");
                 }
 
                 var newLog = new TourLog
                 {
-                    tour_id = tourID,
+                    tour_id = tourId,
                     logDateTime = tourLog.Date,
                     comment = tourLog.Comment,
                     difficulty = tourLog.Difficulty,
@@ -116,7 +116,7 @@ namespace TourPlanner.BL.Services
                 };
 
                 var createdLog = await _tourLogRepository.AddTourLogAsync(newLog);
-                await RecalculateComputedAttributesAsync(tourID);
+                await RecalculateComputedAttributesAsync(tourId);
 
                 tourLog.ID = createdLog.log_id;
                 return tourLog;
@@ -127,18 +127,18 @@ namespace TourPlanner.BL.Services
             }
         }
 
-        public async Task UpdateTourLogAsync(TourLogDTO tourLog, int tourID, int tourLogID, int userID)
+        public async Task UpdateTourLogAsync(TourLogDTO tourLog, int tourId, int tourLogId, int userId)
         {
             try
             {
-                var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
-                var existingLog = await _tourLogRepository.GetTourLogByIDAsync(tourLogID);
+                var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
+                var existingLog = await _tourLogRepository.GetTourLogByIDAsync(tourLogId);
 
                 if(tour == null)
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL19)");
                 }
-                if(tour.user_id != userID)
+                if(tour.user_id != userId)
                 {
                     throw new BusinessException("Forbidden: User has insufficient permissions to update a log for this tour. (BL20)");
                 }
@@ -146,7 +146,7 @@ namespace TourPlanner.BL.Services
                 {
                     throw new BusinessException("Not Found: Tour log not found. (BL21)");
                 }
-                if(existingLog.tour_id != tourID)
+                if(existingLog.tour_id != tourId)
                 {
                     throw new BusinessException("Bad Request: Tour log does not belong to the specified tour. (BL22)");
                 }
@@ -159,7 +159,7 @@ namespace TourPlanner.BL.Services
                 existingLog.rating = tourLog.Rating;
 
                 await _tourLogRepository.UpdateTourLogAsync(existingLog);
-                await RecalculateComputedAttributesAsync(tourID);
+                await RecalculateComputedAttributesAsync(tourId);
             }
             catch(DataAccessException ex)
             {
@@ -167,18 +167,18 @@ namespace TourPlanner.BL.Services
             }
         }
 
-        public async Task DeleteTourLogAsync(int tourID, int tourLogID, int userID)
+        public async Task DeleteTourLogAsync(int tourId, int tourLogId, int userId)
         {
             try
             {
-                var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
-                var existingLog = await _tourLogRepository.GetTourLogByIDAsync(tourLogID);
+                var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
+                var existingLog = await _tourLogRepository.GetTourLogByIDAsync(tourLogId);
 
                 if(tour == null)
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL24)");
                 }
-                if(tour.user_id != userID)
+                if(tour.user_id != userId)
                 {
                     throw new BusinessException("Forbidden: User has insufficient permissions to delete a log for this tour. (BL25)");
                 }
@@ -186,13 +186,13 @@ namespace TourPlanner.BL.Services
                 {
                     throw new BusinessException("Not Found: Tour log not found. (BL26)");
                 }
-                if(existingLog.tour_id != tourID)
+                if(existingLog.tour_id != tourId)
                 {
                     throw new BusinessException("Bad Request: Tour log does not belong to the specified tour. (BL27)");
                 }
 
-                await _tourLogRepository.DeleteTourLogAsync(tourLogID);
-                await RecalculateComputedAttributesAsync(tourID);
+                await _tourLogRepository.DeleteTourLogAsync(tourLogId);
+                await RecalculateComputedAttributesAsync(tourId);
             }
             catch(DataAccessException ex)
             {
@@ -200,10 +200,10 @@ namespace TourPlanner.BL.Services
             }
         }
 
-        private async Task RecalculateComputedAttributesAsync(int tourID) // helper method to calc popularity/childfriendliness
+        private async Task RecalculateComputedAttributesAsync(int tourId) // helper method to calc popularity/childfriendliness
         {
-            var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
-            var logs = await _tourLogRepository.GetTourLogsByTourIDAsync(tourID);
+            var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
+            var logs = await _tourLogRepository.GetTourLogsByTourIDAsync(tourId);
 
             if(tour == null)
             {
@@ -212,10 +212,10 @@ namespace TourPlanner.BL.Services
 
             tour.popularity = logs.Count();
             
-            const double MaxChildFriendlyDistance = 10000;
-            const int MaxChildFriendlyTime = 10800;
+            const decimal maxChildFriendlyDistance = 10000;
+            const int maxChildFriendlyTime = 10800;
 
-            bool isChildFriendly = tour.distance <= MaxChildFriendlyDistance && tour.estimatedTime <= MaxChildFriendlyTime;
+            bool isChildFriendly = tour.distance <= maxChildFriendlyDistance && tour.estimatedTime <= maxChildFriendlyTime;
 
             if(logs.Any())
             {

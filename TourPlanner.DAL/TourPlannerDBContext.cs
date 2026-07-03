@@ -1,3 +1,5 @@
+
+
 using Microsoft.EntityFrameworkCore;
 
 namespace TourPlanner.DAL

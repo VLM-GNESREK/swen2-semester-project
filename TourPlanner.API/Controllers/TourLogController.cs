@@ -8,7 +8,7 @@ namespace TourPlanner.API.Controllers
 {
     [ApiController]
     [Route("api/tours/{tourId:int}/logs")]
-    [Authorize]
+    //[Authorize]
     public class TourLogController : ControllerBase
     {
         private readonly ITourLogService _tourLogService;

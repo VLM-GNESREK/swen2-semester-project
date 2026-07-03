@@ -40,19 +40,22 @@ public class TourController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByID(int id)
     {
+        
         var tour = await _tourService.GetTourByIDAsync(id, GetUserID());
+        
         if(tour == null)
         {
             return NotFound( new { Error = "Tour not found." });
         }
+        var updatedOpenRoute =  await _openRouteService.GetRoute(tour.OpenRoute);
+        tour.OpenRoute = updatedOpenRoute;
         return Ok(tour);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(TourDTO tour)
     {
-        var updatedOpenRoute =  await _openRouteService.GetRoute(tour.OpenRoute);
-        tour.OpenRoute = updatedOpenRoute;
+        
         var createdTour = await _tourService.AddTourAsync(tour, GetUserID());
         return Ok(createdTour);
     }

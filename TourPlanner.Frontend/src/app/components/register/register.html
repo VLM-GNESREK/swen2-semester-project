@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Register</h5>
+        </div>
+
+        <div class="card-body">
+          <form #registerForm="ngForm" (ngSubmit)="register(registerForm)">
+
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="registerUsername" class="form-label">Username</label>
+
+              <input
+                type="text"
+                id="registerUsername"
+                class="form-control"
+                name="username"
+                placeholder="Choose username"
+                [(ngModel)]="registerData.username"
+                required
+                #username="ngModel"
+                [ngClass]="{'is-invalid': username.touched && username.invalid}">
+
+              @if (username.touched && username.invalid) {
+                <div class="invalid-feedback">
+                  Username is required.
+                </div>
+              }
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="registerPassword" class="form-label">Password</label>
+
+              <input
+                type="password"
+                id="registerPassword"
+                class="form-control"
+                name="password"
+                placeholder="Create password"
+                [(ngModel)]="registerData.password"
+                required
+                #password="ngModel"
+                [ngClass]="{'is-invalid': password.touched && password.invalid}">
+
+              @if (password.touched && password.invalid) {
+                <div class="invalid-feedback">
+                  Password is required.
+                </div>
+              }
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" [disabled]="registerForm.invalid">
+              Register
+            </button>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

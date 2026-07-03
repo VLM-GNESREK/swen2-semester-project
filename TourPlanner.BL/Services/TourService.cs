@@ -16,11 +16,11 @@ namespace TourPlanner.BL.Services
             _tourRepository = tourRepository;
         }
 
-        public async Task<IEnumerable<TourDTO>> GetToursAsync(int userID)
+        public async Task<IEnumerable<TourDTO>> GetToursAsync(int userId)
         {
             try
             {
-                var tours = await _tourRepository.GetToursByUserIDAsync(userID);
+                var tours = await _tourRepository.GetToursByUserIDAsync(userId);
 
                 return tours.Select(t => new TourDTO
                 {
@@ -29,33 +29,54 @@ namespace TourPlanner.BL.Services
                     Description = t.description ?? string.Empty,
                     From = t.startLocation,
                     To = t.targetLocation,
-                    TransportType = t.transportType,
-                    Distance = t.distance,
-                    EstimatedTime = t.estimatedTime,
+                    OpenRoute = new OpenRoute
+                    {
+                        TransportType = t.transportType,
+                        Distance = t.distance,
+                        Duration = t.estimatedTime,
+                        ToFromCoords = new ToFromCoords
+                        {
+                            FromCoord = new Coords
+                            {
+                                Name = t.startLocation,
+                                Lat = t.FromLat,
+                                Lng = t.FromLng
+                            },
+                            ToCoord = new Coords
+                            {
+                                Name = t.targetLocation,
+                                Lat = t.ToLat,
+                                Lng = t.ToLng
+                            }
+                        }
+                    },
+
                     ImageRouteInformation = t.routeImagePath,
                     Popularity = t.popularity ?? 0,
                     IsChildFriendly = t.childFriendly == 1
                 }).ToList();
             }
-            catch(DataAccessException ex)
+            catch (DataAccessException ex)
             {
                 throw new BusinessException("Failed to retrieve tours. (BL1)", ex);
             }
         }
 
-        public async Task<TourDTO?> GetTourByIDAsync(int tourID, int userID)
+        public async Task<TourDTO?> GetTourByIDAsync(int tourId, int userId)
         {
             try
             {
-                var tour = await _tourRepository.GetTourByTourIDAsync(tourID);
+                var tour = await _tourRepository.GetTourByTourIDAsync(tourId);
 
-                if(tour == null)
+                if (tour == null)
                 {
                     return null;
                 }
-                if(tour.user_id != userID)
+
+                if (tour.user_id != userId)
                 {
-                    throw new BusinessException("Unauthorised: Tour unable to be retrieved due to insufficient permissions. (BL2)");
+                    throw new BusinessException(
+                        "Forbidden: Tour unable to be retrieved due to insufficient permissions. (BL2)");
                 }
 
                 return new TourDTO
@@ -65,42 +86,65 @@ namespace TourPlanner.BL.Services
                     Description = tour.description ?? string.Empty,
                     From = tour.startLocation,
                     To = tour.targetLocation,
-                    TransportType = tour.transportType,
-                    Distance = tour.distance,
-                    EstimatedTime = tour.estimatedTime,
+                    OpenRoute = new OpenRoute
+                    {
+                        TransportType = tour.transportType,
+                        Distance = tour.distance,
+                        Duration = tour.estimatedTime,
+                        ToFromCoords = new ToFromCoords
+                        {
+                            FromCoord = new Coords
+                            {
+                                Name = tour.startLocation,
+                                Lat = tour.FromLat,
+                                Lng = tour.FromLng
+                            },
+                            ToCoord = new Coords
+                            {
+                                Name = tour.targetLocation,
+                                Lat = tour.ToLat,
+                                Lng = tour.ToLng
+                            }
+                        }
+                    },
                     ImageRouteInformation = tour.routeImagePath,
                     Popularity = tour.popularity ?? 0,
                     IsChildFriendly = tour.childFriendly == 1
                 };
             }
-            catch(DataAccessException ex)
+            catch (DataAccessException ex)
             {
                 throw new BusinessException("Failed to retrieve tour. (BL2)", ex);
             }
         }
 
-        public async Task<TourDTO> AddTourAsync(TourDTO tourDTO, int userID)
+        public async Task<TourDTO> AddTourAsync(TourDTO tourDto, int userId)
         {
-            const double MaxChildFriendlyDistance = 10000;
-            const int MaxChildFriendlyTime = 10800; 
+            const decimal maxChildFriendlyDistance = 10000;
+            const int maxChildFriendlyTime = 10800;
 
             try
             {
-                bool initialChildFriendly = tourDTO.Distance <= MaxChildFriendlyDistance && tourDTO.EstimatedTime <= MaxChildFriendlyTime;
+                bool initialChildFriendly = tourDto.OpenRoute.Distance <= maxChildFriendlyDistance &&
+                                            tourDto.OpenRoute.Duration <= maxChildFriendlyTime;
 
                 var tour = new Tour
                 {
-                    tour_name = tourDTO.Name,
-                    description = tourDTO.Description,
-                    startLocation = tourDTO.From,
-                    targetLocation = tourDTO.To,
-                    transportType = tourDTO.TransportType,
-                    distance = tourDTO.Distance,
-                    estimatedTime = tourDTO.EstimatedTime,
-                    routeImagePath = tourDTO.ImageRouteInformation,
-                    popularity = tourDTO.Popularity,
+                    tour_name = tourDto.Name,
+                    description = tourDto.Description,
+                    startLocation = tourDto.From,
+                    targetLocation = tourDto.To,
+                    transportType = tourDto.OpenRoute.TransportType,
+                    distance = tourDto.OpenRoute.Distance,
+                    estimatedTime = tourDto.OpenRoute.Duration,
+                    FromLat = tourDto.OpenRoute.ToFromCoords.FromCoord.Lat,
+                    FromLng = tourDto.OpenRoute.ToFromCoords.FromCoord.Lng,
+                    ToLat = tourDto.OpenRoute.ToFromCoords.ToCoord.Lat,
+                    ToLng = tourDto.OpenRoute.ToFromCoords.ToCoord.Lng,
+                    routeImagePath = tourDto.ImageRouteInformation,
+                    popularity = tourDto.Popularity,
                     childFriendly = initialChildFriendly ? 1 : 0,
-                    user_id = userID
+                    user_id = userId
                 };
 
                 await _tourRepository.AddTourAsync(tour);
@@ -112,73 +156,99 @@ namespace TourPlanner.BL.Services
                     Description = tour.description ?? string.Empty,
                     From = tour.startLocation,
                     To = tour.targetLocation,
-                    TransportType = tour.transportType,
-                    Distance = tour.distance,
-                    EstimatedTime = tour.estimatedTime,
+                    OpenRoute = new OpenRoute
+                    {
+                        TransportType = tour.transportType,
+                        Distance = tour.distance,
+                        Duration = tour.estimatedTime,
+                        ToFromCoords = new ToFromCoords
+                        {
+                            FromCoord = new Coords
+                            {
+                                Name = tour.startLocation,
+                                Lat = tour.FromLat,
+                                Lng = tour.FromLng
+                            },
+                            ToCoord = new Coords
+                            {
+                                Name = tour.targetLocation,
+                                Lat = tour.ToLat,
+                                Lng = tour.ToLng
+                            }
+                        }
+                    },
                     ImageRouteInformation = tour.routeImagePath,
                     Popularity = tour.popularity ?? 0,
                     IsChildFriendly = tour.childFriendly == 1
                 };
             }
-            catch(DataAccessException ex)
+            catch (DataAccessException ex)
             {
                 throw new BusinessException("Failed to add tour. (BL3)", ex);
             }
         }
 
-        public async Task UpdateTourAsync(TourDTO tourDTO, int tourID, int userID)
+        public async Task UpdateTourAsync(TourDTO tourDto, int tourId, int userId)
         {
             try
             {
-                var existingTour = await _tourRepository.GetTourByTourIDAsync(tourID);
+                var existingTour = await _tourRepository.GetTourByTourIDAsync(tourId);
 
-                if(existingTour == null)
+                if (existingTour == null)
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL4)");
                 }
-                if(existingTour.user_id != userID)
+
+                if (existingTour.user_id != userId)
                 {
-                    throw new BusinessException("Unauthorised: User does not have permission to update this tour. (BL5)");
+                    throw new BusinessException(
+                        "Unauthorised: User does not have permission to update this tour. (BL5)");
                 }
 
-                existingTour.tour_name = tourDTO.Name;
-                existingTour.description = tourDTO.Description;
-                existingTour.startLocation = tourDTO.From;
-                existingTour.targetLocation = tourDTO.To;
-                existingTour.transportType = tourDTO.TransportType;
-                existingTour.distance = tourDTO.Distance;
-                existingTour.estimatedTime = tourDTO.EstimatedTime;
-                existingTour.routeImagePath = tourDTO.ImageRouteInformation;
-                existingTour.popularity = tourDTO.Popularity;
-                existingTour.childFriendly = tourDTO.IsChildFriendly ? 1 : 0;
+                existingTour.tour_name = tourDto.Name;
+                existingTour.description = tourDto.Description;
+                existingTour.startLocation = tourDto.From;
+                existingTour.targetLocation = tourDto.To;
+                existingTour.transportType = tourDto.OpenRoute.TransportType;
+                existingTour.distance = tourDto.OpenRoute.Distance;
+                existingTour.estimatedTime = tourDto.OpenRoute.Duration;
+                existingTour.FromLat = tourDto.OpenRoute.ToFromCoords.FromCoord.Lat;
+                existingTour.FromLng = tourDto.OpenRoute.ToFromCoords.FromCoord.Lng;
+                existingTour.ToLat = tourDto.OpenRoute.ToFromCoords.ToCoord.Lat;
+                existingTour.ToLng = tourDto.OpenRoute.ToFromCoords.ToCoord.Lng;
+                existingTour.routeImagePath = tourDto.ImageRouteInformation;
+                existingTour.popularity = tourDto.Popularity;
+                existingTour.childFriendly = tourDto.IsChildFriendly ? 1 : 0;
 
                 await _tourRepository.UpdateTourAsync(existingTour);
             }
-            catch(DataAccessException ex)
+            catch (DataAccessException ex)
             {
                 throw new BusinessException("Failed to update tour. (BL6)", ex);
             }
         }
 
-        public async Task DeleteTourAsync(int tourID, int userID)
+        public async Task DeleteTourAsync(int tourId, int userId)
         {
             try
             {
-                var existingTour = await _tourRepository.GetTourByTourIDAsync(tourID);
+                var existingTour = await _tourRepository.GetTourByTourIDAsync(tourId);
 
 
-                if(existingTour == null)
+                if (existingTour == null)
                 {
                     throw new BusinessException("Not Found: Tour not found. (BL7)");
                 }
-                if(existingTour.user_id != userID)
+
+                if (existingTour.user_id != userId)
                 {
-                    throw new BusinessException("Unauthorised: User does not have permission to delete this tour. (BL8)");
+                    throw new BusinessException(
+                        "Unauthorised: User does not have permission to delete this tour. (BL8)");
                 }
 
-                await _tourRepository.DeleteTourAsync(tourID);
+                await _tourRepository.DeleteTourAsync(tourId);
             }
-            catch(DataAccessException ex)
+            catch (DataAccessException ex)
             {
                 throw new BusinessException("Failed to delete tour. (BL9)", ex);
             }
