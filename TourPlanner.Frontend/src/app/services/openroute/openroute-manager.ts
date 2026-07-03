@@ -30,9 +30,6 @@ export class OpenrouteManager {// Vienna defaults
     this.error.set(null);
   }
 
-  /**
-   * Loads the demo route using a simulated external API.
-   */
   loadRoute(from: Coords, to: Coords, points: Coords[]): void {
     this.isLoading.set(true);
     this.error.set(null);

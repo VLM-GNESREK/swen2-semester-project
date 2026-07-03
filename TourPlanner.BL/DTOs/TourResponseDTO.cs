@@ -1,1 +1,0 @@
-namespace TourPlanner.BL.DTOs;

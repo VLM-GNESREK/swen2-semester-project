@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using TourPlanner.BL.DTOs;
 using TourPlanner.BL.Interfaces;
 
@@ -6,6 +8,7 @@ namespace TourPlanner.API.Controllers;
 
 [ApiController]
 [Route("api/tours")]
+[Authorize]
 public class TourController : ControllerBase
 {
     private readonly ITourService _tourService;
@@ -17,55 +20,54 @@ public class TourController : ControllerBase
         _openRouteService = openRouteService;
     }
 
-
-    [HttpGet("{id}")]
-    public IActionResult GetbyId(int id)
+    private int GetUserID()
     {
-        var tours = _tourService.GetById(id);
-        if (tours == null)
+        var userIDClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(userIDClaim == null)
         {
-            return NoContent();
+            throw new UnauthorizedAccessException("Unauthorised: User ID claim not found. (API1)");
         }
+        return int.Parse(userIDClaim);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var tours = await _tourService.GetToursAsync(GetUserID());
         return Ok(tours);
     }
-    [HttpGet]
-    public IActionResult GetAll()
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByID(int id)
     {
-        var tours = _tourService.GetTours();
-        if (tours.Count==0)
+        var tour = await _tourService.GetTourByIDAsync(id, GetUserID());
+        if(tour == null)
         {
-            return NoContent();
+            return NotFound( new { Error = "Tour not found." });
         }
-        return Ok(tours);
+        return Ok(tour);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(TourDto tour)
+    public async Task<IActionResult> Create(TourDTO tour)
     {
-        
         var updatedOpenRoute =  await _openRouteService.GetRoute(tour.OpenRoute);
         tour.OpenRoute = updatedOpenRoute;
-        var addTour = _tourService.AddTour(tour);
-        return Ok(addTour);
+        var createdTour = await _tourService.AddTourAsync(tour, GetUserID());
+        return Ok(createdTour);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id,TourDto tour)
+    public async Task<IActionResult> Update(int id, TourDTO tour)
     {
-        if (_tourService.UpdateTour(id, tour))
-        {
-            return Ok();
-        }
-        return NotFound();
+        await _tourService.UpdateTourAsync(tour, id, GetUserID());
+        return Ok();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        if (_tourService.DeleteToru(id))
-        {
-            return Ok();
-        }
-        return NotFound();
+        await _tourService.DeleteTourAsync(id, GetUserID());
+        return NoContent();
     }
 }

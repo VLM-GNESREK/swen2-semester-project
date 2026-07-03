@@ -20,7 +20,6 @@ import {Coords,OpenRoute,ToFromCoords} from '../../models/openroute-coords';
 
 export class TourDashboard
 {
-  //searchControl = new FormControl('');
   fromSuggestions: any[] = [];
   toSuggestions: any[] = [];
 

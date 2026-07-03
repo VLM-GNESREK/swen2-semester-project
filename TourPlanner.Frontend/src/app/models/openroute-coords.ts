@@ -10,7 +10,6 @@ export interface ToFromCoords {
 export interface OpenRoute{
 
   transportType: string;
-
   toFromCoords: ToFromCoords;
   duration?: number;
   distance?: number;
