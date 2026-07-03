@@ -18,14 +18,14 @@ export class TourService
     return this.http.get<TourDtoAngular[]>(this.apiUrl);
   }
 
-  getTourById(id: number): Observable<TourDtoAngular> 
+  getTourById(id: number): Observable<TourDtoAngular>
   {
-    return this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`); 
+    return this.http.get<TourDtoAngular>(`${this.apiUrl}/${id}`);
   }
 
-  createTour(tour: TourDtoAngular)
+  createTour(tour: TourDtoAngular) : Observable<TourDtoAngular>
   {
-    return this.http.post(this.apiUrl, tour);
+    return this.http.post<TourDtoAngular>(this.apiUrl, tour);
   }
 
   deleteTour(id: number)

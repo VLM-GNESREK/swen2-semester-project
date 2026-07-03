@@ -14,8 +14,7 @@
               <input type="text" id="tourNameInput" class="form-control" name="tourName" placeholder="Enter tour name"
                      [(ngModel)]="newTour.name" required #tourName="ngModel"
                      [ngClass]="{'is-invalid': tourName.touched && tourName.invalid}">
-              @if (tourName.touched && tourName.invalid)
-              {
+              @if (tourName.touched && tourName.invalid) {
                 <div class="invalid-feedback">Name is required.</div>
               }
             </div>
@@ -40,11 +39,9 @@
                 </div>
 
                 <div class="col-6">
-                  @if (fromSuggestions.length > 0)
-                  {
+                  @if (fromSuggestions.length > 0) {
                     <div class="list-group">
-                      @for (suggestion of fromSuggestions; track suggestion.name)
-                      {
+                      @for (suggestion of fromSuggestions; track suggestion.name) {
                         <button
                           type="button"
                           class="list-group-item list-group-item-action"
@@ -57,8 +54,7 @@
                 </div>
               </div>
 
-              @if (tourFrom.touched && tourFrom.invalid)
-              {
+              @if (tourFrom.touched && tourFrom.invalid) {
                 <div class="invalid-feedback d-block">
                   Starting location is required.
                 </div>
@@ -85,11 +81,9 @@
                 </div>
 
                 <div class="col-6">
-                  @if (toSuggestions.length > 0)
-                  {
+                  @if (toSuggestions.length > 0) {
                     <div class="list-group">
-                      @for (suggestion of toSuggestions; track suggestion.name)
-                      {
+                      @for (suggestion of toSuggestions; track suggestion.name) {
                         <button
                           type="button"
                           class="list-group-item list-group-item-action"
@@ -102,8 +96,7 @@
                 </div>
               </div>
 
-              @if (tourTo.touched && tourTo.invalid)
-              {
+              @if (tourTo.touched && tourTo.invalid) {
                 <div class="invalid-feedback d-block">
                   Destination is required.
                 </div>
@@ -112,7 +105,8 @@
 
             <div class="mb-3">
               <label for="tourDescInput" class="form-label">Description</label>
-              <input type="text" id="tourDescInput" class="form-control" name="tourDesc" placeholder="Optional description"
+              <input type="text" id="tourDescInput" class="form-control" name="tourDesc"
+                     placeholder="Optional description"
                      [(ngModel)]="newTour.description">
             </div>
 
@@ -129,13 +123,16 @@
                 <option value="foot-hiking">Hiking</option>
                 <option value="wheelchair">Wheelchair</option>
               </select>
-              @if (tourTransport.touched && tourTransport.invalid)
-              {
+              @if (tourTransport.touched && tourTransport.invalid) {
                 <div class="invalid-feedback">Transport type is required.</div>
               }
             </div>
 
             <button type="submit" class="btn btn-primary w-100" [disabled]="createForm.invalid">Add Tour</button>
+            <input type="file" #fileInput accept=".json" (change)="importTour($event)"
+              hidden
+            />
+            <button class="btn btn-sm btn-dark me-2" (click)="fileInput.click()">Import Tour</button>
           </form>
         </div>
       </div>
@@ -144,17 +141,18 @@
     <div class="col-md-8">
       <h3>Tour List</h3>
       <div class="list-group">
-        @for (tour of toursUIonly; track tour.id)
-        {
+        @for (tour of toursUIonly; track tour.id) {
           <div class="list-group-item">
 
-            @if (editingTourId === tour.id)
-            {
+            @if (editingTourId === tour.id) {
               <div class="row g-2 mb-2">
-                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.name" placeholder="Name"></div>
-                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.from" placeholder="From"></div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.name" placeholder="Name">
+                </div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.from" placeholder="From">
+                </div>
                 <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.to" placeholder="To"></div>
-                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.description" placeholder="Description"></div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.description"
+                                             placeholder="Description"></div>
                 <div class="col-sm-6">
                   <select class="form-select" [(ngModel)]="editedTour.openRoute!.transportType" required>
                     <option value="" disabled selected>Select transport type</option>
@@ -163,26 +161,30 @@
                     <option value="Walking">Walking</option>
                   </select>
                 </div>
-                <div class="col-sm-6"><input type="number" class="form-control" [(ngModel)]="editedTour.openRoute!.distance" placeholder="Distance"></div>
-                <div class="col-sm-6"><input type="number" class="form-control" [(ngModel)]="editedTour.openRoute!.duration" placeholder="Estimated Time"></div>
-                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.routeInformation" placeholder="Route Info"></div>
+                <div class="col-sm-6"><input type="number" class="form-control"
+                                             [(ngModel)]="editedTour.openRoute!.distance" placeholder="Distance"></div>
+                <div class="col-sm-6"><input type="number" class="form-control"
+                                             [(ngModel)]="editedTour.openRoute!.duration" placeholder="Estimated Time">
+                </div>
+                <div class="col-sm-6"><input class="form-control" [(ngModel)]="editedTour.routeInformation"
+                                             placeholder="Route Info"></div>
               </div>
               <button class="btn btn-sm btn-success me-2" (click)="saveTour(tour.id)">Save</button>
               <button class="btn btn-sm btn-secondary" (click)="cancelEdit()">Cancel</button>
             }
 
-            @if (editingTourId !== tour.id)
-            {
+            @if (editingTourId !== tour.id) {
               <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">{{ tour.name }}</h5>
                 <small>{{ tour.openRoute!.transportType }}</small>
               </div>
               <p class="mb-1">{{ tour.from }} → {{ tour.to }}</p>
               <small class="text-muted">{{ tour.description }}</small>
-              <div class="mt-2">
+              <div class="mt-2 d-flex align-items-center">
                 <button class="btn btn-sm btn-info me-2" [routerLink]="['/tours', tour.id]">View Details</button>
                 <button class="btn btn-sm btn-secondary me-2" (click)="editTour(tour)">Edit</button>
-                <button class="btn btn-sm btn-danger" (click)="deleteTour(tour.id)">Delete</button>
+                <button class="btn btn-sm btn-dark me-2" (click)="exportTour(tour)">Export</button>
+                <button class="btn btn-sm btn-danger ms-auto" (click)="deleteTour(tour.id)">Delete</button>
               </div>
             }
           </div>
