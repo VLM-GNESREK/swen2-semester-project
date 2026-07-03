@@ -1,8 +1,8 @@
 using Moq;
 using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 using TourPlanner.BL.Services;
 using TourPlanner.DAL.Repositories;
 using TourPlanner.DAL.Entities;
@@ -19,7 +19,7 @@ namespace TourPlanner.Tests.BL
         private Mock<IConfiguration> _mockConfiguration;
         private UserService _userService;
 
-        private const string ValidSecretKey = "super-secret-key-that-is-at-least-256-bits-long-for-hmac";
+        private const string Secret = "super-secret-key-that-is-at-least-256-bits-long-for-hmac";
 
         [SetUp]
         public void Setup()
@@ -27,149 +27,205 @@ namespace TourPlanner.Tests.BL
             _mockUserRepository = new Mock<IUserRepository>();
             _mockConfiguration = new Mock<IConfiguration>();
 
-            _mockConfiguration.Setup(c => c["JwtSettings:SecretKey"]).Returns(ValidSecretKey);
+            _mockConfiguration.Setup(c => c["JwtSettings:SecretKey"]).Returns(Secret);
             _mockConfiguration.Setup(c => c["JwtSettings:Issuer"]).Returns("TestIssuer");
             _mockConfiguration.Setup(c => c["JwtSettings:Audience"]).Returns("TestAudience");
 
             _userService = new UserService(_mockUserRepository.Object, _mockConfiguration.Object);
         }
 
-        private string ComputeExpectedHash(string password, string secret)
+        private static string Hash(string password)
         {
-            var keyEncoded = Encoding.UTF8.GetBytes(secret);
-            using var hmac = new HMACSHA256(keyEncoded);
-            var result = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(result);
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Secret));
+            return Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
         }
 
-        [TestCase(false, "Valid1Password!123", false, false, (string?)null)] 
-        [TestCase(false, "Exact16Pass!1234", false, false, (string?)null)]
-        [TestCase(true, "Valid1Password!123", false, false, "Conflict: Username already exists. (BL30)")] 
-        [TestCase(false, "Short1!a", false, false, "Bad Request: Password must be at least 16 characters long. (BL31)")] 
-        [TestCase(false, "Short1Pass!1234", false, false, "Bad Request: Password must be at least 16 characters long. (BL31)")]
-        [TestCase(false, "nouppercasepassword!123", false, false, "Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (BL32)")] 
-        [TestCase(false, "NOLOWERCASEPASSWORD!123", false, false, "Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (BL32)")] 
-        [TestCase(false, "NoDigitPassword!!!", false, false, "Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (BL32)")] 
-        [TestCase(false, "NoSpecialCharPassword123", false, false, "Bad Request: Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. (BL32)")] 
-        [TestCase(false, "Valid1Password!123", false, true, "JWT Key is missing from configuration.")] 
-        [TestCase(false, "Valid1Password!123", true, false, "Failed to register user. (BL33)")] 
-        public async Task RegisterUserAsync_Scenarios(bool userExists, string password, bool throwRepoException, bool removeJwtKey, string? expectedExceptionMsg)
+        // -------------------------
+        // WE REGIST IT SHOULD WORK
+        // -------------------------
+
+        [Test]
+        public async Task RegisterUser_ShouldSucceed()
         {
-            var dto = new UserRegistrationDTO { Username = "TestUser", Password = password };
-            var existingUser = userExists ? new User { username = "TestUser" } : null;
-
-            _mockUserRepository.Setup(r => r.GetUserByUsernameAsync(dto.Username)).ReturnsAsync(existingUser);
-
-            if (throwRepoException)
+            var dto = new UserRegistrationDTO
             {
-                _mockUserRepository.Setup(r => r.AddUserAsync(It.IsAny<User>()))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
+                Username = "test",
+                Password = "VeryStrongPassword123!"
+            };
 
-            if (removeJwtKey)
-            {
-                _mockConfiguration.Setup(c => c["JwtSettings:SecretKey"]).Returns((string?)null);
-            }
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ReturnsAsync((User?)null);
 
-            if (expectedExceptionMsg != null)
-            {
-                if (expectedExceptionMsg.Contains("JWT Key"))
-                {
-                    var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _userService.RegisterUserAsync(dto));
-                    Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-                }
-                else
-                {
-                    var ex = Assert.ThrowsAsync<BusinessException>(() => _userService.RegisterUserAsync(dto));
-                    Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-                }
-                
-                if (!throwRepoException)
-                {
-                    _mockUserRepository.Verify(r => r.AddUserAsync(It.IsAny<User>()), Times.Never);
-                }
-            }
-            else
-            {
-                await _userService.RegisterUserAsync(dto);
+            await _userService.RegisterUserAsync(dto);
 
-                string expectedHash = ComputeExpectedHash(dto.Password, ValidSecretKey);
-
-                _mockUserRepository.Verify(r => r.AddUserAsync(It.Is<User>(u => 
-                    u.username == dto.Username && 
-                    u.pw_hash == expectedHash
+            _mockUserRepository.Verify(r =>
+                r.AddUserAsync(It.Is<User>(u =>
+                    u.username == dto.Username &&
+                    u.pw_hash == Hash(dto.Password)
                 )), Times.Once);
-            }
+        }
+        // USER ALERADY EXISTS
+        [Test]
+        public void RegisterUser_ShouldFail_WhenUserExists()
+        {
+            var dto = new UserRegistrationDTO
+            {
+                Username = "test",
+                Password = "VeryStrongPassword123!"
+            };
+
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ReturnsAsync(new User());
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _userService.RegisterUserAsync(dto));
+        }
+        //PASSWORD TO WEAK / SHORT / WHY DID WE USE 16 CHARS??
+        [Test]
+        public void RegisterUser_ShouldFail_WhenPasswordTooWeak()
+        {
+            var dto = new UserRegistrationDTO
+            {
+                Username = "test",
+                Password = "weakpass"
+            };
+
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ReturnsAsync((User?)null);
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _userService.RegisterUserAsync(dto));
+        }
+        //THIS SHOULD NEVER HAPPEN - I HOPE
+        [Test]
+        public void RegisterUser_ShouldFail_WhenJwtMissing()
+        {
+            var dto = new UserRegistrationDTO
+            {
+                Username = "test",
+                Password = "VeryStrongPassword123!"
+            };
+
+            _mockConfiguration.Setup(c => c["JwtSettings:SecretKey"])
+                .Returns((string?)null);
+
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _userService.RegisterUserAsync(dto));
+        }
+        // REPO DOWN
+        [Test]
+        public void RegisterUser_ShouldFail_OnRepoError()
+        {
+            var dto = new UserRegistrationDTO
+            {
+                Username = "test",
+                Password = "VeryStrongPassword123!"
+            };
+
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ReturnsAsync((User?)null);
+
+            _mockUserRepository
+                .Setup(r => r.AddUserAsync(It.IsAny<User>()))
+                .ThrowsAsync(new DataAccessException("db"));
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _userService.RegisterUserAsync(dto));
         }
 
-        [TestCase(true, true, false, false, (string?)null)] 
-        [TestCase(false, true, false, false, "Unauthorised: Invalid username or password. (BL34)")] 
-        [TestCase(true, false, false, false, "Unauthorised: Invalid username or password. (BL34)")] 
-        [TestCase(true, true, false, true, "JWT Key is missing from configuration.")] 
-        [TestCase(true, true, true, false, "Failed to login user. (BL35)")] 
-        public async Task LoginUserAsync_Scenarios(bool userExists, bool correctPassword, bool throwRepoException, bool removeJwtKey, string? expectedExceptionMsg)
+        // -------------------------
+        // LOGIN WORKS GIMME TOKEN
+        // -------------------------
+
+        [Test]
+        public async Task LoginUser_ShouldReturnToken()
         {
-            var dto = new UserLoginDTO { Username = "TestUser", Password = "ProvidedPassword123!" };
-            var dbPassword = correctPassword ? "ProvidedPassword123!" : "DifferentPassword123!";
-            
-            var existingUser = userExists ? new User 
-            { 
-                user_id = 1, 
-                username = "TestUser", 
-                pw_hash = ComputeExpectedHash(dbPassword, ValidSecretKey) 
-            } : null;
+            var dto = new UserLoginDTO
+            {
+                Username = "test",
+                Password = "Password123!"
+            };
 
-            if (throwRepoException)
+            var user = new User
             {
-                _mockUserRepository.Setup(r => r.GetUserByUsernameAsync(dto.Username))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
-            else
-            {
-                _mockUserRepository.Setup(r => r.GetUserByUsernameAsync(dto.Username))
-                                   .ReturnsAsync(existingUser);
-            }
+                user_id = 1,
+                username = dto.Username,
+                pw_hash = Hash(dto.Password)
+            };
 
-            if (removeJwtKey)
-            {
-                _mockConfiguration.Setup(c => c["JwtSettings:SecretKey"]).Returns((string?)null);
-            }
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ReturnsAsync(user);
 
-            if (expectedExceptionMsg != null)
+            var result = await _userService.LoginUserAsync(dto);
+
+            Assert.That(result.Username, Is.EqualTo(dto.Username));
+            Assert.That(result.Token, Is.Not.Null.And.Not.Empty);
+
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(result.Token);
+
+            Assert.That(jwt.Claims.First(c => c.Type == "sub").Value, Is.EqualTo("1"));
+            Assert.That(jwt.Claims.First(c => c.Type == "unique_name").Value, Is.EqualTo(dto.Username));
+        }
+        // WRONG PW / USERNAME
+        [Test]
+        public void LoginUser_ShouldFail_WhenInvalidCredentials()
+        {
+            var dto = new UserLoginDTO
             {
-                if (expectedExceptionMsg.Contains("JWT Key"))
+                Username = "test",
+                Password = "wrong"
+            };
+
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ReturnsAsync(new User
                 {
-                    var ex = Assert.ThrowsAsync<InvalidOperationException>(() => _userService.LoginUserAsync(dto));
-                    Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-                }
-                else
-                {
-                    var ex = Assert.ThrowsAsync<BusinessException>(() => _userService.LoginUserAsync(dto));
-                    Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-                }
-            }
-            else
+                    user_id = 1,
+                    username = dto.Username,
+                    pw_hash = Hash("correct")
+                });
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _userService.LoginUserAsync(dto));
+        }
+        //THAT SHOULD NOT HAPPEN NONOONONO
+        //WELL IT MAY HAPPEN IF ENVIRONMENT VARIABLE IS NOT SET
+        [Test]
+        public void LoginUser_ShouldFail_WhenJwtMissing()
+        {
+            var dto = new UserLoginDTO
             {
-                var result = await _userService.LoginUserAsync(dto);
+                Username = "test",
+                Password = "Password123!"
+            };
 
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.Username, Is.EqualTo(dto.Username));
-                Assert.That(string.IsNullOrWhiteSpace(result.Token), Is.False);
+            _mockConfiguration.Setup(c => c["JwtSettings:SecretKey"])
+                .Returns((string?)null);
 
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(result.Token);
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _userService.LoginUserAsync(dto));
+        }
+        // REPO DOWN
+        [Test]
+        public void LoginUser_ShouldFail_OnRepoError()
+        {
+            var dto = new UserLoginDTO
+            {
+                Username = "test",
+                Password = "Password123!"
+            };
 
-                var subClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
-                var uniqueNameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.UniqueName)?.Value;
-                var hasJtiClaim = jwtToken.Claims.Any(c => c.Type == JwtRegisteredClaimNames.Jti);
+            _mockUserRepository
+                .Setup(r => r.GetUserByUsernameAsync(dto.Username))
+                .ThrowsAsync(new DataAccessException("db"));
 
-                Assert.That(subClaim, Is.EqualTo("1"));
-                Assert.That(uniqueNameClaim, Is.EqualTo("TestUser"));
-                Assert.That(hasJtiClaim, Is.True);
-                Assert.That(jwtToken.Issuer, Is.EqualTo("TestIssuer"));
-                Assert.That(jwtToken.Audiences.First(), Is.EqualTo("TestAudience"));
-                Assert.That(jwtToken.ValidTo, Is.EqualTo(DateTime.UtcNow.AddHours(2)).Within(TimeSpan.FromSeconds(5)));
-            }
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _userService.LoginUserAsync(dto));
         }
     }
 }

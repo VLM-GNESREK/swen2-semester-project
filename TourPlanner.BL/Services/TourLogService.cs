@@ -152,7 +152,7 @@ namespace TourPlanner.BL.Services
                 var currentUser = await _userRepository.GetUserByIDAsync(userId);
                 if (currentUser == null)
                 {
-                    throw new BusinessException("Not Found: User odes not exist (BL26)");
+                    throw new BusinessException("Not Found: User does not exist (BL26)");
                     
                 }
                 if(currentUser.username != existingLog.Username)
@@ -203,7 +203,7 @@ namespace TourPlanner.BL.Services
                 var currentUser = await _userRepository.GetUserByIDAsync(userId);
                 if (currentUser == null)
                 {
-                    throw new BusinessException("Not Found: User odes not exist (BL26)");
+                    throw new BusinessException("Not Found: User does not exist (BL26)");
                     
                 }
                 if(currentUser.username != existingLog.Username)

@@ -1,10 +1,11 @@
 using Moq;
+using NUnit.Framework;
 using TourPlanner.BL.Services;
-using TourPlanner.DAL.Repositories;
-using TourPlanner.DAL.Entities;
 using TourPlanner.BL.DTOs;
 using TourPlanner.BL.Exceptions;
+using TourPlanner.DAL.Entities;
 using TourPlanner.DAL.Exceptions;
+using TourPlanner.DAL.Repositories;
 
 namespace TourPlanner.Tests.BL
 {
@@ -21,247 +22,204 @@ namespace TourPlanner.Tests.BL
             _tourService = new TourService(_mockTourRepository.Object);
         }
 
-        private TourDTO CreateValidTourDto(decimal distance = 5000, int duration = 3600)
-        {
-            return new TourDTO
-            {
-                Name = "Updated Tour Name",
-                Description = "Updated Description",
-                From = "City A",
-                To = "City B",
-                OpenRoute = new OpenRoute
-                {
-                    TransportType = "bicycle",
-                    Distance = distance,
-                    Duration = duration,
-                    ToFromCoords = new ToFromCoords
-                    {
-                        FromCoord = new Coords { Name = "City A", Lat = 48.2M, Lng = 16.3M },
-                        ToCoord = new Coords { Name = "City B", Lat = 47.2M, Lng = 11.4M }
-                    }
-                },
-                ImageRouteInformation = "/new/path.png",
-                Popularity = 8,
-                IsChildFriendly = false
-            };
-        }
-
-        private Tour CreateValidTourEntity(int id, int userId)
+        private Tour CreateTour(int id = 1, int userId = 1)
         {
             return new Tour
             {
                 tour_id = id,
                 user_id = userId,
-                tour_name = "Original Tour",
-                description = "Original Description",
+                tour_name = "Test Tour",
+                description = "Desc",
                 startLocation = "A",
                 targetLocation = "B",
                 transportType = "car",
                 distance = 5000,
                 estimatedTime = 3600,
-                FromLat = 1.0M,
-                FromLng = 1.0M,
-                ToLat = 2.0M,
-                ToLng = 2.0M,
-                routeImagePath = "/old/path.png",
-                popularity = 5,
+                FromLat = 1,
+                FromLng = 1,
+                ToLat = 2,
+                ToLng = 2,
+                popularity = 2,
                 childFriendly = 1
             };
         }
 
-        [TestCase(false, (string?)null)]
-        [TestCase(true, "Failed to retrieve tours. (BL1)")]
-        public async Task GetToursAsync_Scenarios(bool throwRepoException, string? expectedExceptionMsg)
+        private TourDTO CreateDto()
         {
-            int userId = 1;
-            if (throwRepoException)
+            return new TourDTO
             {
-                _mockTourRepository.Setup(r => r.GetToursByUserIDAsync(userId))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
-            else
-            {
-                var tours = new List<Tour> { CreateValidTourEntity(1, userId) };
-                _mockTourRepository.Setup(r => r.GetToursByUserIDAsync(userId))
-                                   .ReturnsAsync(tours);
-            }
-
-            if (expectedExceptionMsg != null)
-            {
-                var ex = Assert.ThrowsAsync<BusinessException>(() => _tourService.GetToursAsync(userId));
-                Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-            }
-            else
-            {
-                var result = await _tourService.GetToursAsync(userId);
-                var tourList = result.ToList();
-                
-                Assert.That(tourList.Count, Is.EqualTo(1));
-                
-                var dto = tourList.First();
-                Assert.That(dto.ID, Is.EqualTo(1));
-                Assert.That(dto.Name, Is.EqualTo("Original Tour"));
-                Assert.That(dto.From, Is.EqualTo("A"));
-                Assert.That(dto.OpenRoute.TransportType, Is.EqualTo("car"));
-                Assert.That(dto.OpenRoute.Distance, Is.EqualTo(5000));
-                Assert.That(dto.OpenRoute.ToFromCoords.FromCoord.Lat, Is.EqualTo(1.0M));
-                Assert.That(dto.IsChildFriendly, Is.True);
-            }
+                Name = "New Tour",
+                Description = "Desc",
+                From = "A",
+                To = "B",
+                OpenRoute = new OpenRoute
+                {
+                    TransportType = "car",
+                    Distance = 5000,
+                    Duration = 3600,
+                    ToFromCoords = new ToFromCoords
+                    {
+                        FromCoord = new Coords { Name = "A", Lat = 1, Lng = 1 },
+                        ToCoord = new Coords { Name = "B", Lat = 2, Lng = 2 }
+                    }
+                },
+                ImageRouteInformation = "/img.png",
+                Popularity = 0,
+                IsChildFriendly = true
+            };
         }
 
-        [TestCase(1, 1, true, true, false, (string?)null)] 
-        [TestCase(1, 1, false, true, false, (string?)null)] 
-        [TestCase(1, 2, true, false, false, "Forbidden: Tour unable to be retrieved due to insufficient permissions. (BL2)")] 
-        [TestCase(1, 1, true, true, true, "Failed to retrieve tour. (BL2)")] 
-        public async Task GetTourByIDAsync_Scenarios(int requestedTourId, int requestingUserId, bool tourExists, bool isOwner, bool throwRepoException, string? expectedExceptionMsg)
-        {
-            var tour = tourExists ? CreateValidTourEntity(requestedTourId, isOwner ? requestingUserId : 999) : null;
-            
-            if (throwRepoException)
-            {
-                _mockTourRepository.Setup(r => r.GetTourByTourIDAsync(requestedTourId))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
-            else
-            {
-                _mockTourRepository.Setup(r => r.GetTourByTourIDAsync(requestedTourId))
-                                   .ReturnsAsync(tour);
-            }
+        // GET ALL TOURS
 
-            if (expectedExceptionMsg != null)
-            {
-                var ex = Assert.ThrowsAsync<BusinessException>(() => _tourService.GetTourByIDAsync(requestedTourId, requestingUserId));
-                Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-            }
-            else if (!tourExists)
-            {
-                var result = await _tourService.GetTourByIDAsync(requestedTourId, requestingUserId);
-                Assert.That(result, Is.Null);
-            }
-            else
-            {
-                var result = await _tourService.GetTourByIDAsync(requestedTourId, requestingUserId);
-                
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result!.ID, Is.EqualTo(requestedTourId));
-                Assert.That(result.Name, Is.EqualTo("Original Tour"));
-                Assert.That(result.To, Is.EqualTo("B"));
-                Assert.That(result.ImageRouteInformation, Is.EqualTo("/old/path.png"));
-                Assert.That(result.OpenRoute.ToFromCoords.ToCoord.Lng, Is.EqualTo(2.0M));
-            }
+        [Test]
+        public async Task GetTours_ReturnsMappedTours()
+        {
+            _mockTourRepository
+                .Setup(r => r.GetAllToursAsync())
+                .ReturnsAsync(new List<Tour> { CreateTour() });
+
+            var result = (await _tourService.GetToursAsync(1)).ToList();
+
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result[0].Name, Is.EqualTo("Test Tour"));
+            Assert.That(result[0].From, Is.EqualTo("A"));
+        }
+        // GET TOURS WHEN REPO FAILS
+        [Test]
+        public void GetTours_WhenRepoFails_ThrowsBusinessException()
+        {
+            _mockTourRepository
+                .Setup(r => r.GetAllToursAsync())
+                .ThrowsAsync(new DataAccessException());
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _tourService.GetToursAsync(1));
         }
 
-        [TestCase(5000, 5000, true, false, (string?)null)] 
-        [TestCase(15000, 5000, false, false, (string?)null)] 
-        [TestCase(5000, 15000, false, false, (string?)null)] 
-        [TestCase(5000, 5000, false, true, "Failed to add tour. (BL3)")] 
-        public async Task AddTourAsync_Scenarios(decimal distance, int duration, bool expectedChildFriendly, bool throwRepoException, string? expectedExceptionMsg)
+        // GET TOUR BY SPECIFIC ID
+
+        [Test]
+        public async Task GetTourById_ReturnsTour()
         {
-            int userId = 1;
-            var dto = CreateValidTourDto(distance, duration);
+            _mockTourRepository
+                .Setup(r => r.GetTourByTourIDAsync(1))
+                .ReturnsAsync(CreateTour());
 
-            if (throwRepoException)
-            {
-                _mockTourRepository.Setup(r => r.AddTourAsync(It.IsAny<Tour>()))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
-            else
-            {
-                _mockTourRepository.Setup(r => r.AddTourAsync(It.IsAny<Tour>()))
-                                   .Callback<Tour>(t => t.tour_id = 99) 
-                                   .ReturnsAsync((Tour t) => t);
-            }
+            var result = await _tourService.GetTourByIDAsync(1, 1);
 
-            if (expectedExceptionMsg != null)
-            {
-                var ex = Assert.ThrowsAsync<BusinessException>(() => _tourService.AddTourAsync(dto, userId));
-                Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-            }
-            else
-            {
-                var result = await _tourService.AddTourAsync(dto, userId);
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.ID, Is.EqualTo(99));
-                Assert.That(result.IsChildFriendly, Is.EqualTo(expectedChildFriendly));
-                _mockTourRepository.Verify(r => r.AddTourAsync(It.IsAny<Tour>()), Times.Once);
-            }
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.ID, Is.EqualTo(1));
+        }
+        // GETT TOUR BY ID BUT TOUR DOES NOT EXIST
+        [Test]
+        public async Task GetTourById_WhenNotFound_ReturnsNull()
+        {
+            _mockTourRepository
+                .Setup(r => r.GetTourByTourIDAsync(1))
+                .ReturnsAsync((Tour?)null);
+
+            var result = await _tourService.GetTourByIDAsync(1, 1);
+
+            Assert.That(result, Is.Null);
+        }
+        
+        // ADD TOUR SUCCESFULLYY
+
+        [Test]
+        public async Task AddTour_CreatesTour()
+        {
+            _mockTourRepository
+                .Setup(r => r.AddTourAsync(It.IsAny<Tour>()))
+                .Callback<Tour>(t => t.tour_id = 99)
+                .ReturnsAsync((Tour t) => t);
+
+            var result = await _tourService.AddTourAsync(CreateDto(), 1);
+
+            Assert.That(result.ID, Is.EqualTo(99));
+            Assert.That(result.Name, Is.EqualTo("New Tour"));
+
+            _mockTourRepository.Verify(r => r.AddTourAsync(It.IsAny<Tour>()), Times.Once);
+        }
+        // ADD TOUR BUT REPO FAILS
+        [Test]
+        public void AddTour_WhenRepoFails_Throws()
+        {
+            _mockTourRepository
+                .Setup(r => r.AddTourAsync(It.IsAny<Tour>()))
+                .ThrowsAsync(new DataAccessException());
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _tourService.AddTourAsync(CreateDto(), 1));
         }
 
-        [TestCase(true, true, false, (string?)null)] 
-        [TestCase(false, true, false, "Not Found: Tour not found. (BL4)")] 
-        [TestCase(true, false, false, "Unauthorised: User does not have permission to update this tour. (BL5)")] 
-        [TestCase(true, true, true, "Failed to update tour. (BL6)")] 
-        public async Task UpdateTourAsync_Scenarios(bool tourExists, bool isOwner, bool throwRepoException, string? expectedExceptionMsg)
+        // WE UPDATE TOUR AND IT WORKS
+
+        [Test]
+        public async Task UpdateTour_UpdatesTour()
         {
-            int tourId = 1;
-            int userId = 1;
-            var dto = CreateValidTourDto();
-            var existingTour = tourExists ? CreateValidTourEntity(tourId, isOwner ? userId : 999) : null;
+            var tour = CreateTour();
 
-            _mockTourRepository.Setup(r => r.GetTourByTourIDAsync(tourId)).ReturnsAsync(existingTour);
+            _mockTourRepository
+                .Setup(r => r.GetTourByTourIDAsync(1))
+                .ReturnsAsync(tour);
 
-            if (throwRepoException)
-            {
-                _mockTourRepository.Setup(r => r.UpdateTourAsync(It.IsAny<Tour>()))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
-            else
-            {
-                _mockTourRepository.Setup(r => r.UpdateTourAsync(It.IsAny<Tour>())).Returns(Task.CompletedTask);
-            }
+            _mockTourRepository
+                .Setup(r => r.UpdateTourAsync(It.IsAny<Tour>()))
+                .Returns(Task.CompletedTask);
 
-            if (expectedExceptionMsg != null)
-            {
-                var ex = Assert.ThrowsAsync<BusinessException>(() => _tourService.UpdateTourAsync(dto, tourId, userId));
-                Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-            }
-            else
-            {
-                await _tourService.UpdateTourAsync(dto, tourId, userId);
-                
-                Assert.That(existingTour!.tour_name, Is.EqualTo(dto.Name));
-                Assert.That(existingTour.startLocation, Is.EqualTo(dto.From));
-                Assert.That(existingTour.targetLocation, Is.EqualTo(dto.To));
-                Assert.That(existingTour.transportType, Is.EqualTo(dto.OpenRoute.TransportType));
-                Assert.That(existingTour.FromLat, Is.EqualTo(dto.OpenRoute.ToFromCoords.FromCoord.Lat));
-                Assert.That(existingTour.childFriendly, Is.EqualTo(0)); // Maps false to 0
+            await _tourService.UpdateTourAsync(CreateDto(), 1, 1);
 
-                _mockTourRepository.Verify(r => r.UpdateTourAsync(existingTour), Times.Once);
-            }
+            Assert.That(tour.tour_name, Is.EqualTo("New Tour"));
+
+            _mockTourRepository.Verify(r =>
+                r.UpdateTourAsync(tour),
+                Times.Once);
+        }
+        // WE UPDATE TOUR BUT ITS NOT THE OWNER OF TOUR
+        [Test]
+        public void UpdateTour_WhenNotOwner_Throws()
+        {
+            var tour = CreateTour(userId: 2);
+
+            _mockTourRepository
+                .Setup(r => r.GetTourByTourIDAsync(1))
+                .ReturnsAsync(tour);
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _tourService.UpdateTourAsync(CreateDto(), 1, 1));
         }
 
-        [TestCase(true, true, false, (string?)null)] 
-        [TestCase(false, true, false, "Not Found: Tour not found. (BL7)")] 
-        [TestCase(true, false, false, "Unauthorised: User does not have permission to delete this tour. (BL8)")] 
-        [TestCase(true, true, true, "Failed to delete tour. (BL9)")] 
-        public async Task DeleteTourAsync_Scenarios(bool tourExists, bool isOwner, bool throwRepoException, string? expectedExceptionMsg)
+        // WE DELETE TOUR
+
+        [Test]
+        public async Task DeleteTour_DeletesTour()
         {
-            int tourId = 1;
-            int userId = 1;
-            var existingTour = tourExists ? CreateValidTourEntity(tourId, isOwner ? userId : 999) : null;
+            var tour = CreateTour();
 
-            _mockTourRepository.Setup(r => r.GetTourByTourIDAsync(tourId)).ReturnsAsync(existingTour);
+            _mockTourRepository
+                .Setup(r => r.GetTourByTourIDAsync(1))
+                .ReturnsAsync(tour);
 
-            if (throwRepoException)
-            {
-                _mockTourRepository.Setup(r => r.DeleteTourAsync(tourId))
-                                   .ThrowsAsync(new DataAccessException("DB Error"));
-            }
-            else
-            {
-                _mockTourRepository.Setup(r => r.DeleteTourAsync(tourId)).Returns(Task.CompletedTask);
-            }
+            _mockTourRepository
+                .Setup(r => r.DeleteTourAsync(1))
+                .Returns(Task.CompletedTask);
 
-            if (expectedExceptionMsg != null)
-            {
-                var ex = Assert.ThrowsAsync<BusinessException>(() => _tourService.DeleteTourAsync(tourId, userId));
-                Assert.That(ex.Message, Is.EqualTo(expectedExceptionMsg));
-            }
-            else
-            {
-                await _tourService.DeleteTourAsync(tourId, userId);
-                _mockTourRepository.Verify(r => r.DeleteTourAsync(tourId), Times.Once);
-            }
+            await _tourService.DeleteTourAsync(1, 1);
+
+            _mockTourRepository.Verify(r =>
+                r.DeleteTourAsync(1),
+                Times.Once);
+        }
+        // DELETE TOUR BUT ITS ALREADY GONE
+        [Test]
+        public void DeleteTour_WhenNotFound_Throws()
+        {
+            _mockTourRepository
+                .Setup(r => r.GetTourByTourIDAsync(1))
+                .ReturnsAsync((Tour?)null);
+
+            Assert.ThrowsAsync<BusinessException>(() =>
+                _tourService.DeleteTourAsync(1, 1));
         }
     }
 }

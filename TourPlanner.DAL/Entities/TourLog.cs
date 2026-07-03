@@ -11,7 +11,7 @@ namespace TourPlanner.DAL.Entities
         public string? comment { get; set; }
         public string Username { get; set; }
         public int difficulty { get; set; }
-        public double totalDistance { get; set; }
+        public decimal totalDistance { get; set; }
         public int totalTime { get; set; }
         public int rating { get; set; }
         public int tour_id { get; set; }
